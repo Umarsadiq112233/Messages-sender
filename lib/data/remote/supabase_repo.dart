@@ -113,6 +113,88 @@ class SupabaseRepo {
       .eq('campaign_id', campaignId)
       .inFilter('status', ['pending', 'sending']);
 
+  // ─────────────────── Gateway phone (the sending side) ───────────────────
+
+  /// Running campaigns (oldest first) carrying only their pending logs,
+  /// in send order — the work list for the Android gateway phone.
+  Future<List<Campaign>> runningCampaigns() async {
+    final rows = await db.from('campaigns').select().eq('state', 'running').order('created_at', ascending: true);
+    final result = <Campaign>[];
+    for (final r in rows) {
+      final logs = await db
+          .from('delivery_logs')
+          .select()
+          .eq('campaign_id', r['id'] as String)
+          .eq('status', 'pending')
+          .order('position', ascending: true);
+      result.add(campaignFromRow(r, logs.map(logFromRow).toList()));
+    }
+    return result;
+  }
+
+  Future<CampaignState?> campaignState(String campaignId) async {
+    final row = await db.from('campaigns').select('state').eq('id', campaignId).maybeSingle();
+    return row == null ? null : _enum(CampaignState.values, row['state']);
+  }
+
+  /// True while the campaign still has logs waiting or in flight.
+  Future<bool> hasUnfinishedLogs(String campaignId) async {
+    final rows = await db
+        .from('delivery_logs')
+        .select('id')
+        .eq('campaign_id', campaignId)
+        .inFilter('status', ['pending', 'sending'])
+        .limit(1);
+    return rows.isNotEmpty;
+  }
+
+  /// Claims a log for sending. Unlike [updateLog] this writes the real
+  /// `sending` status — the gateway phone owns that transition.
+  Future<void> markLogSending(String logId) =>
+      db.from('delivery_logs').update({'status': 'sending'}).eq('id', logId);
+
+  /// Logs left `sending` by a gateway that died mid-send become pending
+  /// again (only for campaigns that are still running).
+  Future<void> resetStaleSending() async {
+    final rows = await db.from('campaigns').select('id').eq('state', 'running');
+    if (rows.isEmpty) return;
+    await db
+        .from('delivery_logs')
+        .update({'status': 'pending'})
+        .inFilter('campaign_id', [for (final r in rows) r['id'] as String])
+        .eq('status', 'sending');
+  }
+
+  Future<void> completeCampaign(String campaignId) => db
+      .from('campaigns')
+      .update({
+        'state': 'completed',
+        'pause_reason': null,
+        'finished_at': DateTime.now().toUtc().toIso8601String(),
+      })
+      .eq('id', campaignId)
+      .eq('state', 'running');
+
+  /// Heartbeat from the gateway phone: liveness + device identity only.
+  /// Pair code / signal / battery are left to the panel's own writes.
+  Future<void> gatewayHeartbeat({
+    required bool connected,
+    String? deviceName,
+    String? model,
+    String? operator,
+    DisconnectReason? disconnectReason,
+  }) => db
+      .from('gateway')
+      .update({
+        'connected': connected,
+        'last_seen': DateTime.now().toUtc().toIso8601String(),
+        if (deviceName != null) 'device_name': deviceName,
+        if (model != null) 'model': model,
+        if (operator != null && operator.isNotEmpty) 'operator': operator,
+        'disconnect_reason': connected ? null : disconnectReason?.name,
+      })
+      .eq('id', 1);
+
   // ───────────────────────── Activity, settings, gateway ─────────────────────────
 
   Future<void> insertActivity(Activity a) => db.from('activities').insert({
@@ -252,6 +334,16 @@ class SupabaseRepo {
       ..packageRemaining = (r['package_remaining'] as num).toInt()
       ..delaySeconds = (r['delay_seconds'] as num).toInt()
       ..testMode = r['test_mode'] as bool;
+  }
+
+  /// Applies a campaigns-row update (realtime) to a loaded campaign —
+  /// e.g. the gateway phone marking it completed.
+  static void applyCampaignUpdate(Campaign c, Map<String, dynamic> r) {
+    final state = _enum(CampaignState.values, r['state']);
+    if (state != null) c.state = state;
+    c
+      ..pauseReason = _enum(PauseReason.values, r['pause_reason'])
+      ..finishedAt = _tn(r['finished_at']);
   }
 
   static void applyGateway(GatewayInfo g, Map<String, dynamic> r) {
