@@ -211,19 +211,21 @@ class _StatusCard extends StatelessWidget {
       ],
     );
 
+    // Only truthful, live values: the SIM's operator (the phone does not
+    // genuinely report its own number or a signal level, so those old
+    // stats are gone), the phone's real battery, and last seen.
     final stats = Wrap(
       spacing: 10,
       runSpacing: 10,
       alignment: mobile ? WrapAlignment.center : WrapAlignment.start,
       children: [
-        _GlassStat(icon: Icons.sim_card_rounded, label: context.l10n.sim, value: '${g.simNumber} · ${g.operator}'),
         _GlassStat(
-          icon: Icons.signal_cellular_alt_rounded,
-          label: context.l10n.signal,
-          valueWidget: _SignalBars(level: on ? g.signal : 0),
+          icon: Icons.sim_card_rounded,
+          label: context.l10n.sim,
+          value: g.operator.isNotEmpty ? g.operator : '—',
         ),
         _GlassStat(
-          icon: g.charging ? Icons.battery_charging_full_rounded : Icons.battery_5_bar_rounded,
+          icon: _batteryIcon(g),
           label: context.l10n.battery,
           value: on ? '${g.battery}%${g.charging ? context.l10n.charging : ''}' : '—',
         ),
@@ -235,7 +237,9 @@ class _StatusCard extends StatelessWidget {
       ],
     );
 
-    return ClipRRect(
+    return _LiveBorder(
+      active: on,
+      child: ClipRRect(
       borderRadius: BorderRadius.circular(22),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 600),
@@ -297,16 +301,125 @@ class _StatusCard extends StatelessWidget {
           ],
         ),
       ),
+      ),
+    );
+  }
+
+  /// Battery icon that matches the real charge level.
+  IconData _batteryIcon(GatewayInfo g) {
+    if (g.charging) return Icons.battery_charging_full_rounded;
+    if (g.battery >= 90) return Icons.battery_full_rounded;
+    if (g.battery >= 60) return Icons.battery_5_bar_rounded;
+    if (g.battery >= 30) return Icons.battery_3_bar_rounded;
+    if (g.battery >= 10) return Icons.battery_1_bar_rounded;
+    return Icons.battery_alert_rounded;
+  }
+}
+
+/// A professional "live" border for the status card: while the gateway
+/// is connected, a soft light travels slowly around the card's edge;
+/// disconnected it rests as a calm, static hairline. The animation runs
+/// only in the connected state.
+class _LiveBorder extends StatefulWidget {
+  const _LiveBorder({required this.active, required this.child});
+
+  final bool active;
+  final Widget child;
+
+  @override
+  State<_LiveBorder> createState() => _LiveBorderState();
+}
+
+class _LiveBorderState extends State<_LiveBorder> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 3600),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.active) _ctrl.repeat();
+  }
+
+  @override
+  void didUpdateWidget(_LiveBorder old) {
+    super.didUpdateWidget(old);
+    if (widget.active && !_ctrl.isAnimating) {
+      _ctrl.repeat();
+    } else if (!widget.active && _ctrl.isAnimating) {
+      _ctrl.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      child: widget.child,
+      builder: (context, child) => CustomPaint(
+        foregroundPainter: _LiveBorderPainter(progress: _ctrl.value, active: widget.active),
+        child: child,
+      ),
     );
   }
 }
 
+class _LiveBorderPainter extends CustomPainter {
+  const _LiveBorderPainter({required this.progress, required this.active});
+
+  final double progress;
+  final bool active;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final rrect = RRect.fromRectAndRadius(rect.deflate(1), const Radius.circular(21));
+    if (!active) {
+      // Calm, static hairline while disconnected.
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..color = Colors.white.withValues(alpha: .14);
+      canvas.drawRRect(rrect, paint);
+      return;
+    }
+    // A soft band of light travelling around the edge: a sweep gradient
+    // rotated by the animation progress, mostly transparent so the
+    // effect stays subtle and professional.
+    final gradient = SweepGradient(
+      transform: GradientRotation(progress * 6.283185307179586),
+      colors: [
+        Colors.white.withValues(alpha: .10),
+        Colors.white.withValues(alpha: .10),
+        Colors.white.withValues(alpha: .85),
+        Colors.white.withValues(alpha: .10),
+        Colors.white.withValues(alpha: .10),
+      ],
+      stops: const [0.0, 0.38, 0.5, 0.62, 1.0],
+    );
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..shader = gradient.createShader(rect);
+    canvas.drawRRect(rrect, paint);
+  }
+
+  @override
+  bool shouldRepaint(_LiveBorderPainter old) => old.progress != progress || old.active != active;
+}
+
 class _GlassStat extends StatelessWidget {
-  const _GlassStat({required this.icon, required this.label, this.value, this.valueWidget});
+  const _GlassStat({required this.icon, required this.label, this.value});
   final IconData icon;
   final String label;
   final String? value;
-  final Widget? valueWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -330,43 +443,12 @@ class _GlassStat extends StatelessWidget {
                 label,
                 style: const TextStyle(color: Colors.white60, fontSize: 12.5, fontWeight: FontWeight.w600),
               ),
-              valueWidget ??
-                  Text(
-                    value ?? '',
-                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
-                  ),
+              Text(
+                value ?? '',
+                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
+              ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SignalBars extends StatelessWidget {
-  const _SignalBars({required this.level});
-  final int level;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 18,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < 4; i++)
-            Container(
-                  width: 6,
-                  height: 6.0 + i * 4,
-                  margin: const EdgeInsets.only(right: 3),
-                  decoration: BoxDecoration(
-                    color: i < level ? Colors.white : Colors.white24,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                )
-                .animate(delay: (300 + i * 120).ms)
-                .scaleY(begin: 0, end: 1, alignment: Alignment.bottomCenter, curve: Curves.easeOutBack),
         ],
       ),
     );
