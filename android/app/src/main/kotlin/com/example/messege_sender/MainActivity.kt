@@ -41,6 +41,7 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "requestSmsPermission" -> requestSmsPermission(result)
+                    "hasSmsPermission" -> result.success(hasSmsPermission())
                     "requestPhoneStatePermission" -> requestPhoneStatePermission(result)
                     "listSims" -> result.success(listSims())
                     "sendSms" -> sendSms(
