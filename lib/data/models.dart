@@ -178,12 +178,22 @@ class Audience {
 }
 
 class AppSettings {
-  AppSettings({this.dailyLimit = 100, this.packageRemaining = 2450, this.delaySeconds = 20, this.testMode = true});
+  AppSettings({
+    this.dailyLimit = 100,
+    this.packageRemaining = 2450,
+    this.delaySeconds = 20,
+    this.testMode = true,
+    this.simSlot = -1,
+  });
 
   int dailyLimit;
   int packageRemaining;
   int delaySeconds;
   bool testMode;
+
+  /// Physical SIM slot the gateway phone sends from (0 = SIM 1,
+  /// 1 = SIM 2); -1 = the phone's default SMS SIM.
+  int simSlot;
 }
 
 class GatewayInfo {
