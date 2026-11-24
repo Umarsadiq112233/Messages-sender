@@ -16,6 +16,7 @@ import '../../core/widgets/brand.dart';
 import '../../core/widgets/common.dart';
 import '../../core/widgets/form_fields.dart';
 import '../../data/app_store.dart';
+import '../../data/remote/sms_channel.dart';
 import '../../l10n/l10n.dart';
 import '../language/language_picker.dart';
 
@@ -300,15 +301,45 @@ class _SendingSection extends StatefulWidget {
 class _SendingSectionState extends State<_SendingSection> {
   late int _delay = AppStore.instance.settings.delaySeconds;
   late bool _test = AppStore.instance.settings.testMode;
+  late int _simSlot = AppStore.instance.settings.simSlot;
+  List<SimInfo> _sims = const [];
+  bool _loadingSims = false;
   bool _saving = false;
 
-  bool _dirty(AppStore s) => _delay != s.settings.delaySeconds || _test != s.settings.testMode;
+  @override
+  void initState() {
+    super.initState();
+    // On the Android gateway phone, offer its SIMs as choices. No
+    // permission prompt here — without READ_PHONE_STATE the list just
+    // comes back empty; the Load SIMs button asks when tapped.
+    if (SmsChannel.isSupported) _loadSims();
+  }
+
+  Future<void> _loadSims({bool askPermission = false}) async {
+    setState(() => _loadingSims = true);
+    const channel = SmsChannel();
+    if (askPermission) await channel.requestPhoneStatePermission();
+    final sims = await channel.listSims();
+    if (!mounted) return;
+    setState(() {
+      _sims = sims;
+      _loadingSims = false;
+    });
+  }
+
+  String _simLabel(BuildContext context, SimInfo sim) {
+    final n = sim.slot + 1;
+    return sim.carrier.isEmpty ? context.l10n.simSlot(n) : context.l10n.simSlotCarrier(n, sim.carrier);
+  }
+
+  bool _dirty(AppStore s) =>
+      _delay != s.settings.delaySeconds || _test != s.settings.testMode || _simSlot != s.settings.simSlot;
 
   Future<void> _save() async {
     setState(() => _saving = true);
     await Future<void>.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
-    context.readStore.saveSending(delaySeconds: _delay, testMode: _test);
+    context.readStore.saveSending(delaySeconds: _delay, testMode: _test, simSlot: _simSlot);
     setState(() => _saving = false);
     AppToast.success(
       context.l10n.actSendingSavedSub(_delay, _test ? context.l10n.on : context.l10n.off),
@@ -373,6 +404,48 @@ class _SendingSectionState extends State<_SendingSection> {
             ],
           ),
         ),
+        const SizedBox(height: 18),
+        FieldLabel(context.l10n.sendingSim),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            FilterChipX(
+              label: context.l10n.simPhoneDefault,
+              selected: _simSlot == -1,
+              onTap: () => setState(() => _simSlot = -1),
+            ),
+            for (final sim in _sims)
+              FilterChipX(
+                label: _simLabel(context, sim),
+                selected: _simSlot == sim.slot,
+                onTap: () => setState(() => _simSlot = sim.slot),
+              ),
+            // A saved choice whose SIM isn't listed right now (removed,
+            // or permission not granted yet) still shows as selected, so
+            // the choice is never silently lost.
+            if (_simSlot >= 0 && !_sims.any((s) => s.slot == _simSlot))
+              FilterChipX(label: context.l10n.simSlot(_simSlot + 1), selected: true, onTap: () {}),
+          ],
+        ),
+        if (!SmsChannel.isSupported) ...[
+          const SizedBox(height: 8),
+          Text(context.l10n.simChoiceCaption, style: AppText.caption),
+        ] else if (_sims.isEmpty) ...[
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppButton(
+              label: context.l10n.loadSims,
+              icon: Icons.sim_card_rounded,
+              variant: AppButtonVariant.outline,
+              size: AppButtonSize.sm,
+              loading: _loadingSims,
+              onPressed: () => _loadSims(askPermission: true),
+            ),
+          ),
+        ],
         const SizedBox(height: 18),
         Align(
           alignment: context.isMobile ? Alignment.center : Alignment.centerRight,
