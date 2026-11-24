@@ -2,6 +2,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- The gateway phone sends real SMS from its own SIM. -->
     <uses-permission android:name="android.permission.SEND_SMS"/>
+    <!-- Lists the phone's SIMs so the user can pick SIM 1 / SIM 2 for sending. -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:label="messege_sender"
