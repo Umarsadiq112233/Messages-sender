@@ -9,6 +9,7 @@ import '../core/config/supabase_config.dart';
 import '../core/utils/formatters.dart';
 import '../core/utils/phone.dart';
 import 'models.dart';
+import 'remote/gateway_intent.dart';
 import 'remote/gateway_service.dart';
 import 'remote/sms_channel.dart';
 import 'remote/supabase_repo.dart';
@@ -29,9 +30,24 @@ enum LoginResult { ok, wrongCredentials, network }
 /// Connect) sends them from its own SIM and writes the results back;
 /// they arrive here via realtime. Results land in `delivery_logs`
 /// either way.
-class AppStore extends ChangeNotifier {
+class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   AppStore._() {
     if (!isLive) loadSample(notify: false);
+    try {
+      // So the gateway can reconnect itself when the app comes back to
+      // the foreground (see didChangeAppLifecycleState).
+      WidgetsBinding.instance.addObserver(this);
+    } catch (_) {
+      // No binding (e.g. unit tests) — resume auto-connect just won't fire.
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The gateway service only sends while the app process is alive; if
+    // Android killed it in the background, reconnect on return — under
+    // exactly the same conditions as the launch auto-connect.
+    if (state == AppLifecycleState.resumed) unawaited(_maybeAutoConnectGateway());
   }
 
   /// True when a Supabase key is configured.
@@ -212,6 +228,10 @@ class AppStore extends ChangeNotifier {
       focusCampaign = activeCampaign;
       _subscribeRealtime();
       notifyListeners();
+      // The gateway phone should not need a manual Connect after every
+      // app start / APK update — reconnect it by default (real mode,
+      // permission already granted, user hasn't disconnected manually).
+      unawaited(_maybeAutoConnectGateway());
       return true;
     } catch (e) {
       onSyncError?.call(e);
@@ -737,6 +757,34 @@ class AppStore extends ChangeNotifier {
   }
 
   // ───────────────────────── Gateway ─────────────────────────
+  bool _autoConnectBusy = false;
+
+  /// Starts the real gateway with no user action when ALL of these hold:
+  /// live mode on the Android gateway phone, signed in, Test Mode OFF,
+  /// the gateway not already running, the user has not manually
+  /// disconnected on this device ([GatewayIntent]), and the SEND_SMS
+  /// permission is already granted. It never prompts and never toasts —
+  /// without the permission, the Gateway screen's manual Connect runs
+  /// the permission flow instead. Best-effort: any failure leaves the
+  /// manual Connect path untouched.
+  Future<void> _maybeAutoConnectGateway() async {
+    if (_autoConnectBusy) return;
+    _autoConnectBusy = true;
+    try {
+      if (!isLive || !SmsChannel.isSupported) return;
+      if (Supabase.instance.client.auth.currentSession == null) return;
+      if (settings.testMode) return;
+      if (_gatewayService?.isRunning ?? false) return;
+      if (!await GatewayIntent.load()) return;
+      if (!await const SmsChannel().hasPermission()) return;
+      await connectGateway();
+    } catch (_) {
+      // Auto-connect must never break startup or resume.
+    } finally {
+      _autoConnectBusy = false;
+    }
+  }
+
   /// Connects the gateway. On the Android phone itself (live mode) this
   /// really starts the [GatewayService] — it asks for the SMS permission
   /// and begins sending queued messages from this phone's SIM; false is
@@ -746,6 +794,8 @@ class AppStore extends ChangeNotifier {
     if (isLive && SmsChannel.isSupported) {
       final service = _gateway;
       if (service == null || !await service.start()) return false;
+      // Remember the intent on this device: connect by default at launch.
+      unawaited(GatewayIntent.save(true));
       gateway
         ..connected = true
         ..disconnectReason = null
@@ -770,6 +820,9 @@ class AppStore extends ChangeNotifier {
   }
 
   Future<void> disconnectGateway({DisconnectReason reason = DisconnectReason.lostConnection}) async {
+    // A manual disconnect is remembered on this device: the gateway
+    // stays off across app restarts until the user connects again.
+    if (reason == DisconnectReason.byUser) unawaited(GatewayIntent.save(false));
     if (isLive && SmsChannel.isSupported) {
       // Stops the polling loop and writes the disconnected heartbeat.
       await _gateway?.stop(reason: reason);
