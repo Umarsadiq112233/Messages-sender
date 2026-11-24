@@ -75,7 +75,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
     } else if (mode == 'all') {
       _to = _To.all;
     } else {
-      _to = store.selectedIds.isNotEmpty ? _To.selected : _To.all;
+      _to = store.selectedContacts.isNotEmpty ? _To.selected : _To.all;
     }
   }
 
@@ -86,16 +86,31 @@ class _ComposeScreenState extends State<ComposeScreen> {
     super.dispose();
   }
 
+  /// The group actually in effect: the chosen one while it still
+  /// exists, otherwise the first group. [_groupId] on its own goes
+  /// stale — the chosen group can be deleted on the Groups screen, or
+  /// the groups can finish loading (live mode) after this screen first
+  /// built — and group mode then silently targeted nobody: the chips
+  /// showed nothing selected and the recipient count stayed 0 even
+  /// though groups with numbers existed.
+  String? _effectiveGroupId(AppStore store) {
+    final chosen = _groupId;
+    if (chosen != null && store.groupById(chosen) != null) return chosen;
+    return store.groups.firstOrNull?.id;
+  }
+
   List<Contact> _recipients(AppStore store) => switch (_to) {
     _To.all => store.contacts,
-    _To.group => store.contacts.where((c) => c.groupId == _groupId).toList(),
+    _To.group => store.contacts.where((c) => c.groupId == _effectiveGroupId(store)).toList(),
     _To.selected => store.selectedContacts,
   };
 
   Audience _audience(AppStore store) => switch (_to) {
     _To.all => const Audience(AudienceKind.all),
-    _To.group => Audience(AudienceKind.group, name: store.groupById(_groupId)?.name ?? '-'),
-    _To.selected => Audience(AudienceKind.selected, count: store.selectedIds.length),
+    _To.group => Audience(AudienceKind.group, name: store.groupById(_effectiveGroupId(store))?.name ?? '-'),
+    // Count the actual recipient list, not the raw id set, so the
+    // audience recorded on the campaign always matches who got the SMS.
+    _To.selected => Audience(AudienceKind.selected, count: store.selectedContacts.length),
   };
 
   String? _blockReason(AppStore store, int count, SmsCount sms) {
@@ -295,6 +310,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
   Widget _recipientsCard(BuildContext context, AppStore store, List<Contact> recipients) {
     final mobile = context.isMobile;
+    final groupId = _effectiveGroupId(store);
+    // Every tile counts RECIPIENTS (numbers), in the same unit. The
+    // Group tile used to count groups and the Selected tile counted
+    // the raw id set, so the three numbers could not be compared and
+    // neither necessarily matched the list that would actually send.
     final tiles = [
       _ModeTile(
         icon: Icons.groups_rounded,
@@ -307,8 +327,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
       _ModeTile(
         icon: Icons.folder_shared_rounded,
         title: context.l10n.group,
-        count: store.groups.length,
-        countLabel: 'groups',
+        count: groupId == null ? 0 : store.groupCount(groupId),
         selected: _to == _To.group,
         compact: mobile,
         onTap: () => setState(() {
@@ -319,7 +338,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
       _ModeTile(
         icon: Icons.checklist_rounded,
         title: context.l10n.modeSelected,
-        count: store.selectedIds.length,
+        count: store.selectedContacts.length,
         selected: _to == _To.selected,
         compact: mobile,
         onTap: () => setState(() => _to = _To.selected),
@@ -333,13 +352,19 @@ class _ComposeScreenState extends State<ComposeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              for (var i = 0; i < tiles.length; i++) ...[
-                if (i > 0) SizedBox(width: mobile ? 8 : 12),
-                Expanded(child: tiles[i]),
+          // IntrinsicHeight + stretch: all three tiles share the
+          // tallest tile's height, so the row stays even when one
+          // tile's title or count wraps longer than the others.
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < tiles.length; i++) ...[
+                  if (i > 0) SizedBox(width: mobile ? 8 : 12),
+                  Expanded(child: tiles[i]),
+                ],
               ],
-            ],
+            ),
           ),
           AnimatedSize(
             duration: const Duration(milliseconds: 350),
@@ -362,13 +387,13 @@ class _ComposeScreenState extends State<ComposeScreen> {
                               label: g.name,
                               count: store.groupCount(g.id),
                               color: g.color,
-                              selected: _groupId == g.id,
+                              selected: groupId == g.id,
                               onTap: () => setState(() => _groupId = g.id),
                             ).animate(delay: (40 * i).ms).fadeIn().slideX(begin: .2, end: 0),
                         ],
                       ),
               ),
-              _To.selected when store.selectedIds.isEmpty => Padding(
+              _To.selected when store.selectedContacts.isEmpty => Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: InfoBanner(
                   tone: BannerTone.info,
@@ -399,23 +424,38 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   color: recipients.isEmpty ? AppColors.textMuted : AppColors.success,
                 ),
                 const SizedBox(width: 10),
-                AnimatedCount(
-                  value: recipients.length,
-                  duration: const Duration(milliseconds: 600),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
-                  ),
-                ),
                 Expanded(
-                  child: Text(
-                    context.l10n.willGoToSuffix,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
-                    ),
+                  // Count and its suffix sit on one shared baseline, so
+                  // the line reads as a single sentence at any width —
+                  // before, the big count and the smaller suffix were
+                  // separate row children and the suffix drifted below
+                  // the count when it wrapped.
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      AnimatedCount(
+                        value: recipients.length,
+                        duration: const Duration(milliseconds: 600),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          // Plural-aware: "1 number will receive it",
+                          // not "1 numbers will receive it".
+                          context.l10n.willGoToSuffixFor(recipients.length),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (recipients.isNotEmpty && !mobile)
@@ -548,13 +588,14 @@ class _ModeTile extends StatelessWidget {
     required this.selected,
     required this.onTap,
     required this.compact,
-    this.countLabel = 'numbers',
   });
 
   final IconData icon;
   final String title;
+
+  /// Recipients (numbers) this mode will send to — the same unit on
+  /// all three tiles, on mobile and desktop alike.
   final int count;
-  final String countLabel;
   final bool selected;
   final bool compact;
   final VoidCallback onTap;
@@ -585,7 +626,7 @@ class _ModeTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: compact ? MainAxisAlignment.center : MainAxisAlignment.start,
                   children: [
-                    Icon(icon, color: selected ? AppColors.primary : AppColors.textMuted, size: compact ? 24 : 26),
+                    Icon(icon, color: selected ? AppColors.primary : AppColors.textMuted, size: 26),
                     if (!compact) ...[
                       const Spacer(),
                       AnimatedContainer(
@@ -603,20 +644,37 @@ class _ModeTile extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: compact ? 8 : 12),
-                Text(
-                  title,
-                  textAlign: compact ? TextAlign.center : TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: compact ? 14.5 : 16,
-                    color: selected ? AppColors.primary : AppColors.text,
+                // FittedBox + no wrapping: the label always stays on
+                // ONE line and shrinks slightly to fit the tile —
+                // before, narrow mobile tiles broke it mid-word
+                // ("All Number / s", "Selecte / d") over three lines.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: compact ? Alignment.center : Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: selected ? AppColors.primary : AppColors.text,
+                    ),
                   ),
                 ),
-                Text(
-                  compact
-                      ? '$count'
-                      : (countLabel == 'groups' ? context.l10n.countGroups(count) : context.l10n.countNumbers(count)),
-                  style: AppText.caption.copyWith(fontSize: compact ? 13 : 14),
+                const SizedBox(height: 2),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: compact ? Alignment.center : Alignment.centerLeft,
+                  child: Text(
+                    // Same full label everywhere ("12 numbers") —
+                    // mobile used to show a bare number with no unit,
+                    // at a smaller size than desktop, so tiles disagreed.
+                    context.l10n.countNumbers(count),
+                    maxLines: 1,
+                    softWrap: false,
+                    style: AppText.caption,
+                  ),
                 ),
               ],
             ),
