@@ -9,7 +9,8 @@ import '../core/config/supabase_config.dart';
 import '../core/utils/formatters.dart';
 import '../core/utils/phone.dart';
 import 'models.dart';
-import 'remote/sms_sender.dart';
+import 'remote/gateway_service.dart';
+import 'remote/sms_channel.dart';
 import 'remote/supabase_repo.dart';
 import 'sample_data.dart';
 
@@ -22,9 +23,12 @@ enum LoginResult { ok, wrongCredentials, network }
 ///   (in order, see [_push]). Gateway / queue updates arrive via realtime.
 /// * **Demo mode** (no key): in-memory sample data, admin / admin123.
 ///
-/// Sending: with Test Mode ON the queue is simulated; with Test Mode OFF
-/// each message is really sent via the `send-sms` Supabase function
-/// (EasySendSMS). Results are stored in `delivery_logs` either way.
+/// Sending: with Test Mode ON the queue is simulated locally. With Test
+/// Mode OFF the panel only enqueues — logs stay `pending` in Supabase
+/// and the Android gateway phone (this same app: Gateway screen →
+/// Connect) sends them from its own SIM and writes the results back;
+/// they arrive here via realtime. Results land in `delivery_logs`
+/// either way.
 class AppStore extends ChangeNotifier {
   AppStore._() {
     if (!isLive) loadSample(notify: false);
@@ -34,8 +38,16 @@ class AppStore extends ChangeNotifier {
   bool get isLive => SupabaseConfig.isConfigured;
 
   SupabaseRepo? _repo;
-  final SmsSender _smsSender = const SmsSender();
+  GatewayService? _gatewayService;
   RealtimeChannel? _channel;
+
+  /// The gateway service for this device, once the backend is loaded.
+  GatewayService? get _gateway {
+    final repo = _repo;
+    if (repo == null) return null;
+    return _gatewayService ??= GatewayService(repo);
+  }
+
   Future<void> _chain = Future<void>.value();
 
   /// Called when a write to Supabase fails (shown as a toast).
@@ -88,6 +100,7 @@ class AppStore extends ChangeNotifier {
     auth.value = false;
     clearSelection();
     if (!isLive) return;
+    _gatewayService?.stop(); // cancels its timer synchronously
     _stopTimer();
     _channel?.unsubscribe();
     _channel = null;
@@ -160,15 +173,19 @@ class AppStore extends ChangeNotifier {
       selectedIds.clear();
       final meta = Supabase.instance.client.auth.currentUser?.userMetadata;
       displayName = (meta?['display_name'] ?? meta?['name'] ?? displayName).toString();
-      // A campaign left "running" by a closed tab is paused; Resume continues it.
-      for (final c in campaigns.where((c) => c.state == CampaignState.running)) {
-        c
-          ..state = CampaignState.paused
-          ..pauseReason = PauseReason.user;
-        for (final l in c.logs) {
-          if (l.status == DeliveryStatus.sending) l.status = DeliveryStatus.pending;
+      // Test mode is driven by this panel, so a campaign left "running"
+      // by a closed tab is paused; Resume continues it. In real mode the
+      // gateway phone is the driver — running campaigns are left alone.
+      if (settings.testMode) {
+        for (final c in campaigns.where((c) => c.state == CampaignState.running)) {
+          c
+            ..state = CampaignState.paused
+            ..pauseReason = PauseReason.user;
+          for (final l in c.logs) {
+            if (l.status == DeliveryStatus.sending) l.status = DeliveryStatus.pending;
+          }
+          _push((r) => r.updateCampaign(c));
         }
-        _push((r) => r.updateCampaign(c));
       }
       focusCampaign = activeCampaign;
       _subscribeRealtime();
@@ -190,6 +207,19 @@ class AppStore extends ChangeNotifier {
         table: 'gateway',
         callback: (p) {
           SupabaseRepo.applyGateway(gateway, p.newRecord);
+          notifyListeners();
+        },
+      )
+      ..onPostgresChanges(
+        event: PostgresChangeEvent.update,
+        schema: 'public',
+        table: 'campaigns',
+        callback: (p) {
+          // State changes written by the gateway phone (e.g. completed
+          // once every message has been sent).
+          final c = campaigns.where((c) => c.id == p.newRecord['id']).firstOrNull;
+          if (c == null) return;
+          SupabaseRepo.applyCampaignUpdate(c, p.newRecord);
           notifyListeners();
         },
       )
@@ -467,7 +497,7 @@ class AppStore extends ChangeNotifier {
     });
   }
 
-  // ───────────────────────── Queue (simulated gateway) ─────────────────────────
+  // ───────────────────────── Queue ─────────────────────────
   Timer? _timer;
   DateTime? nextSendAt;
 
@@ -602,12 +632,10 @@ class AppStore extends ChangeNotifier {
       return;
     }
     if (!settings.testMode) {
-      // Real mode: messages go through the SMS provider (see _sendReal);
-      // the simulated phone gateway is not involved.
-      final wait = first ? const Duration(milliseconds: 700) : Duration(seconds: settings.delaySeconds);
-      nextSendAt = DateTime.now().add(wait);
-      notifyListeners();
-      _timer = Timer(wait, () => _sendReal(c, next));
+      // Real mode: the panel only enqueues. The logs stay pending in
+      // Supabase; the Android gateway phone sends them from its SIM and
+      // the results come back through realtime (see _subscribeRealtime).
+      nextSendAt = null;
       return;
     }
     if (!gateway.connected) {
@@ -640,29 +668,6 @@ class AppStore extends ChangeNotifier {
     });
   }
 
-  /// One real send (Test Mode OFF): the provider sends the message, then
-  /// the result is recorded exactly like a simulated gateway result.
-  Future<void> _sendReal(Campaign c, DeliveryLog log) async {
-    if (c.state != CampaignState.running) return;
-    log.status = DeliveryStatus.sending;
-    notifyListeners();
-    final ok = await _smsSender.send(log.phone, c.message);
-    // While the send was in flight the user may have paused/stopped the
-    // campaign or logged out — those paths already resolved this log.
-    if (log.status != DeliveryStatus.sending || !campaigns.contains(c)) return;
-    log
-      ..status = ok ? DeliveryStatus.sent : DeliveryStatus.failed
-      ..reason = ok ? null : FailReason.networkBusy
-      ..time = DateTime.now();
-    _push((r) => r.updateLog(log));
-    if (ok) {
-      settings.packageRemaining = max(0, settings.packageRemaining - c.segments);
-      _push((r) => r.saveSettings(settings));
-    }
-    notifyListeners();
-    _scheduleNext();
-  }
-
   // ───────────────────────── Settings ─────────────────────────
   void saveLimits({required int dailyLimit, required int packageRemaining}) {
     settings
@@ -683,7 +688,25 @@ class AppStore extends ChangeNotifier {
   }
 
   // ───────────────────────── Gateway ─────────────────────────
-  Future<void> connectGateway() async {
+  /// Connects the gateway. On the Android phone itself (live mode) this
+  /// really starts the [GatewayService] — it asks for the SMS permission
+  /// and begins sending queued messages from this phone's SIM; false is
+  /// returned when the permission is denied. Everywhere else the
+  /// previous simulated connect is kept.
+  Future<bool> connectGateway() async {
+    if (isLive && SmsChannel.isSupported) {
+      final service = _gateway;
+      if (service == null || !await service.start()) return false;
+      gateway
+        ..connected = true
+        ..disconnectReason = null
+        ..lastSeen = DateTime.now();
+      if (service.deviceName != null) gateway.deviceName = service.deviceName!;
+      if (service.deviceModel != null) gateway.model = service.deviceModel!;
+      _log(ActivityEvent.gatewayConnected, [gateway.deviceName]);
+      notifyListeners();
+      return true;
+    }
     await Future<void>.delayed(const Duration(milliseconds: 2200));
     gateway
       ..connected = true
@@ -694,9 +717,14 @@ class AppStore extends ChangeNotifier {
     _push((r) => r.saveGateway(gateway));
     _log(ActivityEvent.gatewayConnected, [gateway.deviceName]);
     notifyListeners();
+    return true;
   }
 
-  void disconnectGateway({DisconnectReason reason = DisconnectReason.lostConnection}) {
+  Future<void> disconnectGateway({DisconnectReason reason = DisconnectReason.lostConnection}) async {
+    if (isLive && SmsChannel.isSupported) {
+      // Stops the polling loop and writes the disconnected heartbeat.
+      await _gateway?.stop(reason: reason);
+    }
     gateway
       ..connected = false
       ..disconnectReason = reason;
@@ -716,8 +744,12 @@ class AppStore extends ChangeNotifier {
 
   Future<bool> sendTestSms(String phone) async {
     if (!settings.testMode) {
-      // Real mode: an actual SMS through the provider (no gateway needed).
-      final ok = await _smsSender.send(phone, 'Paigham test SMS — your SMS panel is working.');
+      // Real mode: an actual SMS from this phone's own SIM (Android
+      // only) — no provider and no separate gateway device involved.
+      if (!SmsChannel.isSupported) return false;
+      const channel = SmsChannel();
+      if (!await channel.requestPermission()) return false;
+      final ok = await channel.send(phone, 'Paigham test SMS — your SMS panel is working.');
       if (!ok) return false;
       _log(ActivityEvent.testSms, [Phone.format(phone)]);
       notifyListeners();
