@@ -33,10 +33,15 @@ class _GatewayScreenState extends State<GatewayScreen> {
 
   Future<void> _connect() async {
     setState(() => _connecting = true);
-    await context.readStore.connectGateway();
+    final ok = await context.readStore.connectGateway();
     if (!mounted) return;
     setState(() => _connecting = false);
-    AppToast.success(context.l10n.gwConnectedMsg, title: context.l10n.gwConnectedTitle);
+    if (ok) {
+      AppToast.success(context.l10n.gwConnectedMsg, title: context.l10n.gwConnectedTitle);
+    } else {
+      // E.g. the SMS permission was denied on the gateway phone.
+      AppToast.error(context.l10n.noPhoneConnection, title: context.l10n.gatewayNotConnected);
+    }
   }
 
   Future<void> _disconnect() async {
