@@ -501,6 +501,32 @@ class AppStore extends ChangeNotifier {
     return allLogs.where((l) => l.status == DeliveryStatus.sent && l.time != null && l.time!.isSameDay(now)).length;
   }
 
+  /// SMS units actually sent today. Each delivered message counts by
+  /// its campaign's segment count — the same unit the daily limit and
+  /// the Compose total are measured in (a 2-segment message is 2 SMS).
+  int get todaySentSms {
+    final now = DateTime.now();
+    var total = 0;
+    for (final c in campaigns) {
+      final segs = c.segments < 1 ? 1 : c.segments;
+      for (final l in c.logs) {
+        if (l.status == DeliveryStatus.sent && l.time != null && l.time!.isSameDay(now)) {
+          total += segs;
+        }
+      }
+    }
+    return total;
+  }
+
+  /// SMS still available today under the daily limit:
+  /// daily limit − SMS sent today, never below zero. A limit of 0 or
+  /// less means no limit has been set and returns null (unlimited).
+  int? get todayRemaining {
+    final limit = settings.dailyLimit;
+    if (limit <= 0) return null;
+    return max(0, limit - todaySentSms);
+  }
+
   int get totalSent => allLogs.where((l) => l.status == DeliveryStatus.sent).length;
   int get totalFailed => allLogs.where((l) => l.status == DeliveryStatus.failed).length;
 
