@@ -413,6 +413,38 @@ class AppLocalizationsUr extends AppLocalizations {
   String get failLowBalance => 'سم بیلنس کم ہے';
 
   @override
+  String get failLowBalanceHint => 'بیلنس کم ہے — اپنی سم کا پیکیج/بیلنس چیک کریں';
+
+  @override
+  String get failNoPermission =>
+      'ایس ایم ایس کی اجازت نہیں — Android سیٹنگز میں اس ایپ کو ایس ایم ایس کی اجازت دیں';
+
+  @override
+  String get failNoSim => 'منتخب سم نہیں ملی — Settings میں بھیجنے والی سم چیک کریں';
+
+  @override
+  String get sendingSim => 'بھیجنے والی سم';
+
+  @override
+  String get simPhoneDefault => 'فون کی ڈیفالٹ';
+
+  @override
+  String simSlot(int slot) {
+    return 'سم $slot';
+  }
+
+  @override
+  String simSlotCarrier(int slot, String carrier) {
+    return 'سم $slot · $carrier';
+  }
+
+  @override
+  String get simChoiceCaption => 'سم کا انتخاب Android گیٹ وے فون پر نظر آئے گا';
+
+  @override
+  String get loadSims => 'سمیں لوڈ کریں';
+
+  @override
   String get failNotExist => 'نمبر موجود نہیں';
 
   @override
@@ -2537,6 +2569,39 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
 
   @override
   String get failLowBalance => 'SIM balance kam';
+
+  @override
+  String get failLowBalanceHint =>
+      'Balance kam hai — apni SIM ka package/balance check karein';
+
+  @override
+  String get failNoPermission =>
+      'SMS permission allowed nahi — Android settings mein is app ko SMS ki ijazat dein';
+
+  @override
+  String get failNoSim => 'Muntakhab SIM nahi mili — Settings mein Sending SIM check karein';
+
+  @override
+  String get sendingSim => 'Bhejne wali SIM';
+
+  @override
+  String get simPhoneDefault => 'Phone default';
+
+  @override
+  String simSlot(int slot) {
+    return 'SIM $slot';
+  }
+
+  @override
+  String simSlotCarrier(int slot, String carrier) {
+    return 'SIM $slot · $carrier';
+  }
+
+  @override
+  String get simChoiceCaption => 'SIM ka intekhab Android gateway phone par nazar ayega';
+
+  @override
+  String get loadSims => 'SIMs load karein';
 
   @override
   String get failNotExist => 'Number mojood nahi';
