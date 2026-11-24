@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The gateway phone sends real SMS from its own SIM. -->
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:label="messege_sender"
