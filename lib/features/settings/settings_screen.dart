@@ -38,28 +38,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
       (
         title: context.l10n.language,
         subtitle: context.l10n.languageSub,
-        icon: Icons.translate_rounded,
+        icon: Icons.language_rounded,
         color: AppColors.cyan,
         body: const LanguagePicker(),
       ),
       (
         title: context.l10n.secPackage,
         subtitle: context.l10n.secPackageSub,
-        icon: Icons.inventory_2_rounded,
+        icon: Icons.sms_rounded,
         color: AppColors.primary,
         body: const _LimitsSection(),
       ),
       (
         title: context.l10n.secSending,
         subtitle: context.l10n.secSendingSub,
-        icon: Icons.send_time_extension_rounded,
+        icon: Icons.send_rounded,
         color: AppColors.teal,
         body: const _SendingSection(),
       ),
       (
         title: context.l10n.account,
         subtitle: context.l10n.secAccountSub,
-        icon: Icons.lock_person_rounded,
+        icon: Icons.manage_accounts_rounded,
         color: AppColors.violet,
         body: const _AccountSection(),
       ),
@@ -67,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         (
           title: context.l10n.secDemo,
           subtitle: context.l10n.secDemoSub,
-          icon: Icons.dataset_rounded,
+          icon: Icons.storage_rounded,
           color: AppColors.orange,
           body: const _DemoSection(),
         ),
@@ -101,6 +101,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: sections[i].title,
       subtitle: sections[i].subtitle,
       icon: sections[i].icon,
+      iconColor: sections[i].color,
       child: sections[i].body,
     );
 
@@ -183,6 +184,7 @@ class _Accordion extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(title, style: AppText.h3),
+                        const SizedBox(height: 2),
                         Text(subtitle, style: AppText.caption),
                       ],
                     ),
@@ -256,13 +258,18 @@ class _LimitsSectionState extends State<_LimitsSection> {
       children: [
         FieldLabel(context.l10n.dailyLimit),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            NumberStepper(value: _limit, min: 10, max: 5000, step: 10, onChanged: (v) => setState(() => _limit = v)),
-            const SizedBox(width: 12),
-            Expanded(child: Text(context.l10n.dailyLimitHint, style: AppText.caption)),
-          ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: NumberStepper(
+            value: _limit,
+            min: 10,
+            max: 5000,
+            step: 10,
+            onChanged: (v) => setState(() => _limit = v),
+          ),
         ),
+        const SizedBox(height: 8),
+        Text(context.l10n.dailyLimitHint, style: AppText.caption),
         const SizedBox(height: 18),
         AppTextField(
           label: context.l10n.packageRemaining,
@@ -386,7 +393,7 @@ class _SendingSectionState extends State<_SendingSection> {
           ),
           child: Row(
             children: [
-              Icon(Icons.science_outlined, color: _test ? AppColors.violet : AppColors.textMuted),
+              Icon(Icons.science_rounded, color: _test ? AppColors.violet : AppColors.textMuted),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -429,10 +436,9 @@ class _SendingSectionState extends State<_SendingSection> {
               FilterChipX(label: context.l10n.simSlot(_simSlot + 1), selected: true, onTap: () {}),
           ],
         ),
-        if (!SmsChannel.isSupported) ...[
-          const SizedBox(height: 8),
-          Text(context.l10n.simChoiceCaption, style: AppText.caption),
-        ] else if (_sims.isEmpty) ...[
+        const SizedBox(height: 8),
+        Text(context.l10n.simChoiceCaption, style: AppText.caption),
+        if (SmsChannel.isSupported && _sims.isEmpty) ...[
           const SizedBox(height: 10),
           Align(
             alignment: Alignment.centerLeft,
@@ -550,6 +556,8 @@ class _AccountSectionState extends State<_AccountSection> {
           ],
         ),
         const SizedBox(height: 18),
+        const Divider(),
+        const SizedBox(height: 18),
         AppTextField(
           label: context.l10n.oldPassword,
           controller: _old,
@@ -602,7 +610,7 @@ class _AccountSectionState extends State<_AccountSection> {
           label: context.l10n.newPasswordAgain,
           controller: _confirm,
           obscure: !_show,
-          icon: Icons.lock_reset_rounded,
+          icon: Icons.lock_rounded,
           errorText: _confirmErr,
           onChanged: (_) => setState(() => _confirmErr = null),
           onSubmitted: (_) => _save(),
