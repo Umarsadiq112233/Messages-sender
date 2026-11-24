@@ -11,7 +11,8 @@ import 'supabase_repo.dart';
 /// browser included, sees live status through realtime.
 ///
 /// It also heartbeats the `gateway` row (connected / last_seen / device
-/// name) so the panel's Gateway screen shows this phone as online.
+/// name / real battery) so the panel's Gateway screen shows this phone
+/// as online with its current charge.
 class GatewayService {
   GatewayService(this._repo);
 
@@ -24,10 +25,17 @@ class GatewayService {
   bool _running = false;
   bool _tickBusy = false;
   Map<String, String> _info = const {};
+  int? _battery;
+  bool _charging = false;
 
   /// Device identity from the last successful [start].
   String? get deviceName => _info['name'];
   String? get deviceModel => _info['model'];
+
+  /// The phone's real battery from the latest heartbeat read
+  /// (null until the first successful read).
+  int? get batteryLevel => _battery;
+  bool get batteryCharging => _charging;
 
   bool get isRunning => _running;
 
@@ -65,13 +73,25 @@ class GatewayService {
     }
   }
 
-  Future<void> _heartbeat(bool connected, {DisconnectReason? reason}) => _repo.gatewayHeartbeat(
-    connected: connected,
-    deviceName: _info['name'],
-    model: _info['model'],
-    operator: _info['operator'],
-    disconnectReason: reason,
-  );
+  /// Every heartbeat re-reads the phone's real battery first, so the
+  /// panel's Gateway card always shows the current charge — never a
+  /// stale value written once long ago.
+  Future<void> _heartbeat(bool connected, {DisconnectReason? reason}) async {
+    final b = await _channel.batteryStatus();
+    if (b != null) {
+      _battery = b.level;
+      _charging = b.charging;
+    }
+    await _repo.gatewayHeartbeat(
+      connected: connected,
+      deviceName: _info['name'],
+      model: _info['model'],
+      operator: _info['operator'],
+      battery: _battery,
+      charging: _battery == null ? null : _charging,
+      disconnectReason: reason,
+    );
+  }
 
   Future<void> _tick() async {
     if (!_running || _tickBusy) return;
