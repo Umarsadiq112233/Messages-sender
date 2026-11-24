@@ -78,6 +78,18 @@ class SmsChannel {
     }
   }
 
+  /// True when SEND_SMS is already granted. A check only — it never
+  /// shows the permission dialog, so startup code can use it to decide
+  /// whether an automatic gateway connect is possible without asking.
+  Future<bool> hasPermission() async {
+    if (!isSupported) return false;
+    try {
+      return await _channel.invokeMethod<bool>('hasSmsPermission') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Asks the user for the READ_PHONE_STATE permission (needed to list
   /// the phone's SIMs); true when granted.
   Future<bool> requestPhoneStatePermission() async {
