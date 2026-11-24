@@ -1502,6 +1502,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get willGoToSuffix => ' numbers will receive it';
 
   @override
+  String willGoToSuffixFor(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ' numbers will receive it',
+      one: ' number will receive it',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get message => 'Message';
 
   @override
