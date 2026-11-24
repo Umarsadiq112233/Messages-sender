@@ -103,7 +103,13 @@ class _ComposeScreenState extends State<ComposeScreen> {
     if (count == 0) return context.l10n.blockNoRecipients;
     if (!store.gateway.connected) return context.l10n.blockGateway;
     if (store.activeCampaign != null) return context.l10n.blockRunning;
-    if (count * sms.segments > store.settings.packageRemaining) return context.l10n.blockPackage;
+    // The package block only applies when a package balance has
+    // actually been entered in Settings. packageRemaining is 0 when it
+    // was never set (the database default), and blocking on that made
+    // every campaign unsendable.
+    if (store.settings.packageRemaining > 0 && count * sms.segments > store.settings.packageRemaining) {
+      return context.l10n.blockPackage;
+    }
     return null;
   }
 
@@ -641,7 +647,10 @@ class _SummaryCard extends StatelessWidget {
     final s = store.settings;
     final segments = math.max(1, sms.segments);
     final total = count * (sms.characters == 0 ? 0 : segments);
-    final todayLeft = math.max(0, s.dailyLimit - store.todaySent);
+    // Remaining today = daily limit − SMS actually sent today (segment
+    // weighted, real delivery results). Null when no limit is set.
+    final remaining = store.todayRemaining;
+    final afterRemaining = remaining == null ? null : remaining - total;
     final eta = Duration(seconds: count * s.delaySeconds);
     final afterPackage = s.packageRemaining - total;
 
@@ -656,20 +665,33 @@ class _SummaryCard extends StatelessWidget {
           _Line(label: context.l10n.perNumber, value: sms.characters == 0 ? '—' : context.l10n.segmentsValue(segments)),
           _Line(label: context.l10n.totalSms, value: Fmt.number(total), strong: true),
           _Line(
-            label: context.l10n.packageLeftShort,
-            value: total == 0
-                ? Fmt.number(s.packageRemaining)
-                : '${Fmt.number(s.packageRemaining)} → ${Fmt.number(afterPackage)}',
-            color: afterPackage < 0 ? AppColors.danger : null,
+            label: context.l10n.leftToday,
+            value: remaining == null
+                ? '—'
+                : total == 0
+                ? Fmt.number(remaining)
+                : '${Fmt.number(remaining)} → ${Fmt.number(afterRemaining!)}',
+            color: afterRemaining != null && afterRemaining < 0 ? AppColors.danger : null,
           ),
+          // The manually entered package balance is only shown when
+          // one was actually entered in Settings — at 0 (never set) it
+          // used to sit here as a misleading "0 left".
+          if (s.packageRemaining > 0)
+            _Line(
+              label: context.l10n.packageLeftShort,
+              value: total == 0
+                  ? Fmt.number(s.packageRemaining)
+                  : '${Fmt.number(s.packageRemaining)} → ${Fmt.number(afterPackage)}',
+              color: afterPackage < 0 ? AppColors.danger : null,
+            ),
           _Line(
             label: context.l10n.estTime,
             value: count == 0 ? '—' : context.l10n.estTimeValue(context.l10n.duration(eta), s.delaySeconds),
             last: true,
           ),
-          if (total > todayLeft && total > 0) ...[
+          if (remaining != null && total > remaining && total > 0) ...[
             const SizedBox(height: 12),
-            InfoBanner(tone: BannerTone.warning, message: context.l10n.dailyLimitWarn(s.dailyLimit, todayLeft)),
+            InfoBanner(tone: BannerTone.warning, message: context.l10n.dailyLimitWarn(s.dailyLimit, remaining)),
           ],
           if (s.testMode) ...[
             const SizedBox(height: 12),
