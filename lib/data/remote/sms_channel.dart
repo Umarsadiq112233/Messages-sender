@@ -38,6 +38,18 @@ class SmsSendResult {
   };
 }
 
+/// The gateway phone's real battery right now, as read by Android's
+/// BatteryManager (see MainActivity.batteryInfo).
+class BatteryStatus {
+  const BatteryStatus({required this.level, required this.charging});
+
+  /// Charge percentage, 0–100.
+  final int level;
+
+  /// True while the phone is plugged in / fully charged.
+  final bool charging;
+}
+
 /// One active SIM on the gateway phone, as reported by Android's
 /// SubscriptionManager.
 class SimInfo {
@@ -171,8 +183,25 @@ class SmsChannel {
   Future<bool> send(String phone, String message, {int simSlot = -1}) async =>
       (await sendResult(phone, message, simSlot: simSlot)).ok;
 
+  /// The phone's real battery level and charging state, read fresh on
+  /// every call. Null off-Android, on any error, or when Android can't
+  /// report a level — callers keep their last known value then.
+  Future<BatteryStatus?> batteryStatus() async {
+    if (!isSupported) return null;
+    try {
+      final raw = await _channel.invokeMethod<Map<Object?, Object?>>('batteryInfo');
+      if (raw == null) return null;
+      final level = (raw['battery'] as num?)?.toInt();
+      if (level == null || level < 0 || level > 100) return null;
+      return BatteryStatus(level: level, charging: raw['charging'] == true);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// {'name': 'Samsung SM-A145F', 'model': 'SM-A145F · Android 14',
-  /// 'operator': 'Jazz'} — empty off-Android or on error.
+  /// 'operator': 'Jazz', 'battery': '82', 'charging': 'false'} —
+  /// empty off-Android or on error.
   Future<Map<String, String>> deviceInfo() async {
     if (!isSupported) return const {};
     try {
