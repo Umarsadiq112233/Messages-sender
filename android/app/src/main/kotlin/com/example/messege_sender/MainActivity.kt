@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -51,6 +52,7 @@ class MainActivity : FlutterActivity() {
                         result,
                     )
                     "deviceInfo" -> result.success(deviceInfo())
+                    "batteryInfo" -> result.success(batteryInfo())
                     else -> result.notImplemented()
                 }
             }
@@ -311,6 +313,29 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    /// The phone's real battery right now: `battery` is the charge
+    /// percentage (0–100, -1 when it can't be read) and `charging` is
+    /// true while the phone is plugged in / full. Read fresh on every
+    /// call so the gateway heartbeat always reports the live value.
+    private fun batteryInfo(): Map<String, Any> {
+        val level = try {
+            val bm = getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
+            bm?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: -1
+        } catch (e: Exception) {
+            -1
+        }
+        val charging = try {
+            // The sticky battery intent carries the current charge state.
+            val intent = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+            status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL
+        } catch (e: Exception) {
+            false
+        }
+        return mapOf("battery" to level, "charging" to charging)
+    }
+
     private fun deviceInfo(): Map<String, String> {
         val manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
         val operator = try {
@@ -319,10 +344,13 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             ""
         }
+        val battery = batteryInfo()
         return mapOf(
             "name" to "$manufacturer ${Build.MODEL}",
             "model" to "${Build.MODEL} · Android ${Build.VERSION.RELEASE}",
             "operator" to operator,
+            "battery" to battery["battery"].toString(),
+            "charging" to battery["charging"].toString(),
         )
     }
 }
