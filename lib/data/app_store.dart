@@ -170,9 +170,31 @@ class AppStore extends ChangeNotifier {
         ..addAll(results[3]! as List<Activity>);
       if (results[4] case final Map<String, dynamic> row) SupabaseRepo.applySettings(settings, row);
       if (results[5] case final Map<String, dynamic> row) SupabaseRepo.applyGateway(gateway, row);
+      // On the gateway phone itself the database row can be stale: a
+      // previous run that was killed (app swiped away, phone restarted)
+      // never wrote its disconnect, so the row still claims "connected"
+      // while no GatewayService is running in this app instance and
+      // nothing would actually send. Trust the local service instead.
+      // (A browser panel is unaffected — it has no local service.)
+      if (SmsChannel.isSupported && _gatewayService?.isRunning != true) {
+        gateway.connected = false;
+      }
       selectedIds.clear();
       final meta = Supabase.instance.client.auth.currentUser?.userMetadata;
       displayName = (meta?['display_name'] ?? meta?['name'] ?? displayName).toString();
+      // A campaign whose logs are ALL final but whose state is still
+      // "running" (the gateway sent everything but its completion write
+      // was lost, or the app closed at the wrong moment) would otherwise
+      // stay active forever and block Compose with "already running".
+      for (final c in campaigns.where((c) => c.state == CampaignState.running)) {
+        if (c.logs.isNotEmpty &&
+            c.logs.every((l) => l.status == DeliveryStatus.sent || l.status == DeliveryStatus.failed)) {
+          c
+            ..state = CampaignState.completed
+            ..finishedAt = c.finishedAt ?? DateTime.now();
+          _push((r) => r.updateCampaign(c));
+        }
+      }
       // Test mode is driven by this panel, so a campaign left "running"
       // by a closed tab is paused; Resume continues it. In real mode the
       // gateway phone is the driver — running campaigns are left alone.
@@ -678,10 +700,11 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveSending({required int delaySeconds, required bool testMode}) {
+  void saveSending({required int delaySeconds, required bool testMode, required int simSlot}) {
     settings
       ..delaySeconds = delaySeconds
-      ..testMode = testMode;
+      ..testMode = testMode
+      ..simSlot = simSlot;
     _push((r) => r.saveSettings(settings));
     _log(ActivityEvent.sendingSaved, ['$delaySeconds', testMode ? 'ON' : 'OFF']);
     notifyListeners();
@@ -742,24 +765,34 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> sendTestSms(String phone) async {
+  /// Sends the Gateway screen's test SMS. The result carries the real
+  /// outcome: in real mode the radio's verdict (and its failure reason,
+  /// e.g. low balance) from this phone's own SIM; in test mode the old
+  /// simulated outcome (`code: 'sendFailed'` when not connected).
+  Future<SmsSendResult> sendTestSms(String phone) async {
     if (!settings.testMode) {
       // Real mode: an actual SMS from this phone's own SIM (Android
       // only) — no provider and no separate gateway device involved.
-      if (!SmsChannel.isSupported) return false;
+      if (!SmsChannel.isSupported) return const SmsSendResult(ok: false, code: 'sendFailed');
       const channel = SmsChannel();
-      if (!await channel.requestPermission()) return false;
-      final ok = await channel.send(phone, 'Paigham test SMS — your SMS panel is working.');
-      if (!ok) return false;
+      if (!await channel.requestPermission()) {
+        return const SmsSendResult(ok: false, code: 'noPermission');
+      }
+      final res = await channel.sendResult(
+        phone,
+        'Paigham test SMS — your SMS panel is working.',
+        simSlot: settings.simSlot,
+      );
+      if (!res.ok) return res;
       _log(ActivityEvent.testSms, [Phone.format(phone)]);
       notifyListeners();
-      return true;
+      return res;
     }
     await Future<void>.delayed(const Duration(milliseconds: 1600));
-    if (!gateway.connected) return false;
+    if (!gateway.connected) return const SmsSendResult(ok: false, code: 'sendFailed');
     _log(ActivityEvent.testSms, [Phone.format(phone)]);
     notifyListeners();
-    return true;
+    return const SmsSendResult(ok: true, code: 'ok');
   }
 }
 
