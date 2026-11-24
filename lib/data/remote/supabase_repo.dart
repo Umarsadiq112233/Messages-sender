@@ -203,16 +203,25 @@ class SupabaseRepo {
     'created_at': a.time.toUtc().toIso8601String(),
   });
 
-  Future<void> saveSettings(AppSettings s) => db
-      .from('app_settings')
-      .update({
-        'daily_limit': s.dailyLimit,
-        'package_remaining': s.packageRemaining,
-        'delay_seconds': s.delaySeconds,
-        'test_mode': s.testMode,
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      })
-      .eq('id', 1);
+  Future<void> saveSettings(AppSettings s) async {
+    final values = <String, dynamic>{
+      'daily_limit': s.dailyLimit,
+      'package_remaining': s.packageRemaining,
+      'delay_seconds': s.delaySeconds,
+      'test_mode': s.testMode,
+      'sim_slot': s.simSlot,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    };
+    try {
+      await db.from('app_settings').update(values).eq('id', 1);
+    } catch (_) {
+      // A database that hasn't run the sim_slot migration yet would
+      // reject the whole update — retry without sim_slot so the other
+      // settings still save exactly as before.
+      values.remove('sim_slot');
+      await db.from('app_settings').update(values).eq('id', 1);
+    }
+  }
 
   Future<void> saveGateway(GatewayInfo g) => db
       .from('gateway')
@@ -333,7 +342,10 @@ class SupabaseRepo {
       ..dailyLimit = (r['daily_limit'] as num).toInt()
       ..packageRemaining = (r['package_remaining'] as num).toInt()
       ..delaySeconds = (r['delay_seconds'] as num).toInt()
-      ..testMode = r['test_mode'] as bool;
+      ..testMode = r['test_mode'] as bool
+      // Tolerant: a row from an un-migrated database has no sim_slot
+      // key at all — that means "phone default".
+      ..simSlot = (r['sim_slot'] as num?)?.toInt() ?? -1;
   }
 
   /// Applies a campaigns-row update (realtime) to a loaded campaign —
