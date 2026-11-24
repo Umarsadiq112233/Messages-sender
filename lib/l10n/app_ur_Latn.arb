@@ -1397,6 +1397,14 @@
   "@openDatabase": {},
   "willGoToSuffix": " numbers ko jayega",
   "@willGoToSuffix": {},
+  "willGoToSuffixFor": "{count, plural, =1{ number ko jayega} other{ numbers ko jayega}}",
+  "@willGoToSuffixFor": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "message": "Message",
   "@message": {},
   "smsRule": "English: 160 = 1 SMS · Urdu: 70 = 1 SMS",
