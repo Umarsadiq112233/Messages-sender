@@ -110,6 +110,7 @@ class SectionCard extends StatelessWidget {
     required this.child,
     this.subtitle,
     this.icon,
+    this.iconColor,
     this.trailing,
     this.padding = const EdgeInsets.all(20),
   });
@@ -117,6 +118,10 @@ class SectionCard extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData? icon;
+
+  /// Tint for the icon tile. Defaults to the primary blue tile used
+  /// everywhere else; pass a section colour to match an accordion tile.
+  final Color? iconColor;
   final Widget? trailing;
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -134,8 +139,11 @@ class SectionCard extends StatelessWidget {
                 Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(color: AppColors.primaryTint, borderRadius: BorderRadius.circular(12)),
-                  child: Icon(icon, color: AppColors.primary, size: 21),
+                  decoration: BoxDecoration(
+                    color: iconColor?.withValues(alpha: .1) ?? AppColors.primaryTint,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: iconColor ?? AppColors.primary, size: 21),
                 ),
                 const SizedBox(width: 12),
               ],
