@@ -544,14 +544,28 @@ class _TestCardState extends State<_TestCard> {
       return;
     }
     setState(() => _sending = true);
-    final ok = await context.readStore.sendTestSms(_phone.text);
+    final store = context.readStore;
+    final res = await store.sendTestSms(_phone.text);
     if (!mounted) return;
     setState(() {
       _sending = false;
-      _lastOk = ok;
+      _lastOk = res.ok;
     });
-    if (ok) {
+    if (res.ok) {
       AppToast.success(context.l10n.testSent(Phone.format(_phone.text)), title: context.l10n.testSentTitle);
+    } else if (store.settings.testMode) {
+      // Test mode keeps the old simulated failure message.
+      AppToast.error(context.l10n.testFailedMsg, title: context.l10n.testFailed);
+    } else if (res.code == 'noPermission') {
+      AppToast.error(context.l10n.failNoPermission, title: context.l10n.testFailed);
+    } else if (res.code == 'noSim') {
+      AppToast.error(context.l10n.failNoSim, title: context.l10n.testFailed);
+    } else if (res.failReason == FailReason.lowBalance) {
+      // The carrier's generic failure on a prepaid SIM almost always
+      // means no balance / no SMS package — say so plainly.
+      AppToast.error(context.l10n.failLowBalanceHint, title: context.l10n.testFailed);
+    } else if (res.failReason != null) {
+      AppToast.error(context.l10n.failReason(res.failReason!), title: context.l10n.testFailed);
     } else {
       AppToast.error(context.l10n.testFailedMsg, title: context.l10n.testFailed);
     }
