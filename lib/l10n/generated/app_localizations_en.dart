@@ -216,7 +216,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
-  String get languageSub => 'Choose the panel language';
+  String get languageSub => 'Choose the language used in the panel';
 
   @override
   String get languageChanged => 'Language changed';
@@ -452,7 +452,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get simChoiceCaption => 'SIM choice appears on the Android gateway phone';
+  String get simChoiceCaption => 'Choose which SIM sends your messages. This applies on the Android gateway phone.';
 
   @override
   String get loadSims => 'Load SIMs';
@@ -724,6 +724,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sentToday => 'Sent today';
+
 
   @override
   String get leftToday => 'Left today';
@@ -1883,32 +1884,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get campaignTooltip => 'View this campaign';
 
   @override
-  String get secPackage => 'Package / Limit';
+  String get secPackage => 'SMS Package & Daily Limit';
 
   @override
-  String get secPackageSub => 'Daily limit and remaining SMS';
+  String get secPackageSub => 'SMS remaining in your SIM package and the daily sending limit';
 
   @override
   String get secSending => 'Sending';
 
   @override
-  String get secSendingSub => 'Delay and test mode';
+  String get secSendingSub => 'Message delay, test mode and sending SIM';
 
   @override
-  String get secAccountSub => 'Change password';
+  String get secAccountSub => 'Your profile and password';
 
   @override
   String get secDemo => 'Demo data';
 
   @override
-  String get secDemoSub => 'Sample data until the backend is connected';
+  String get secDemoSub => 'Load or clear sample data for trying the panel';
 
   @override
-  String get settingsSub => 'All basic panel settings in one place';
+  String get settingsSub => 'Language, SMS package, sending and account settings';
 
   @override
   String get settingsSubDesktop =>
-      'All basic panel settings in one place — each section has its own Save';
+      'Language, SMS package, sending and account settings — each section saves separately';
 
   @override
   String limitsSavedMsg(int limit, int left) {
@@ -1916,26 +1917,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get limitsSavedTitle => 'Package / Limit saved';
+  String get limitsSavedTitle => 'Package & limit saved';
 
   @override
-  String get dailyLimit => 'Daily SMS limit';
+  String get dailyLimit => 'Daily SMS Limit';
 
   @override
-  String get dailyLimitHint => 'No more than this will go out in a day';
+  String get dailyLimitHint => 'The app will not send more SMS than this in one day. This protects your SIM package and balance.';
 
   @override
-  String get packageRemaining => 'SMS left in package';
+  String get packageRemaining => 'SMS Remaining in Package';
 
   @override
   String get packageHelper =>
-      'Update here after recharging the package (manual)';
+      'How many SMS are left in your SIM package. Update this whenever you recharge or renew the package.';
 
   @override
   String get sendingSavedTitle => 'Sending settings saved';
 
   @override
-  String get defaultDelay => 'Default delay after each SMS';
+  String get defaultDelay => 'Delay Between Messages';
 
   @override
   String get best => 'Best';
@@ -1949,10 +1950,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get testModeOnSub => 'No real SMS will be sent — simulation only';
+  String get testModeOnSub => 'On — messages are only simulated; no real SMS is sent';
 
   @override
-  String get testModeOffSub => 'Real SMS will go through the gateway';
+  String get testModeOffSub => 'Off — real SMS are sent from the SIM on the gateway phone';
 
   @override
   String get oldPasswordRequired => 'Enter your current password';
