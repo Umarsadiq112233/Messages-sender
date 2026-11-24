@@ -641,24 +641,19 @@ class _ContactCard extends StatelessWidget {
         borderColor: selected ? AppColors.primary : null,
         child: Row(
           children: [
+            // Always-visible checkbox, mirroring the desktop table row, so
+            // selection is discoverable without long-press/avatar tricks.
+            // Its tap wins the gesture arena over the card's tap (same as
+            // the avatar and icon buttons below), so it only toggles
+            // selection and never opens Edit.
+            SizedBox(
+              width: 40,
+              child: Checkbox(value: selected, onChanged: (_) => onSelect()),
+            ),
+            const SizedBox(width: 6),
             GestureDetector(
               onTap: onSelect,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 260),
-                transitionBuilder: (w, a) => RotationTransition(
-                  turns: Tween(begin: .5, end: 1.0).animate(a),
-                  child: ScaleTransition(scale: a, child: w),
-                ),
-                child: selected
-                    ? Container(
-                        key: const ValueKey('sel'),
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                        child: const Icon(Icons.check_rounded, color: Colors.white),
-                      )
-                    : InitialsAvatar(key: const ValueKey('av'), name: c.name, size: 48),
-              ),
+              child: InitialsAvatar(name: c.name, size: 48),
             ),
             const SizedBox(width: 14),
             Expanded(
