@@ -2643,6 +2643,12 @@ abstract class AppLocalizations {
   /// **' numbers ko jayega'**
   String get willGoToSuffix;
 
+  /// No description provided for @willGoToSuffixFor.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'{count, plural, =1{ number ko jayega} other{ numbers ko jayega}}'**
+  String willGoToSuffixFor(int count);
+
   /// No description provided for @message.
   ///
   /// In ur_Latn, this message translates to:
