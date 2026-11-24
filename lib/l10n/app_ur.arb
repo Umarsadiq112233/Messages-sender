@@ -424,6 +424,7 @@
   "noneSelectedMsg": "ڈیٹا بیس میں چیک باکس سے نمبر چنیں، پھر یہاں واپس آئیں۔",
   "openDatabase": "ڈیٹا بیس کھولیں",
   "willGoToSuffix": " نمبروں کو جائے گا",
+  "willGoToSuffixFor": "{count, plural, =1{ نمبر کو جائے گا} other{ نمبروں کو جائے گا}}",
   "message": "پیغام",
   "smsRule": "انگریزی: 160 = 1 ایس ایم ایس · اردو: 70 = 1 ایس ایم ایس",
   "templates": "ٹیمپلیٹس",
