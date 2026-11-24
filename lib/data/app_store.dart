@@ -9,6 +9,7 @@ import '../core/config/supabase_config.dart';
 import '../core/utils/formatters.dart';
 import '../core/utils/phone.dart';
 import 'models.dart';
+import 'remote/sms_sender.dart';
 import 'remote/supabase_repo.dart';
 import 'sample_data.dart';
 
@@ -21,8 +22,9 @@ enum LoginResult { ok, wrongCredentials, network }
 ///   (in order, see [_push]). Gateway / queue updates arrive via realtime.
 /// * **Demo mode** (no key): in-memory sample data, admin / admin123.
 ///
-/// The SMS queue itself is still simulated until the Android gateway app
-/// (Phase 3) is connected; its results are stored in `delivery_logs`.
+/// Sending: with Test Mode ON the queue is simulated; with Test Mode OFF
+/// each message is really sent via the `send-sms` Supabase function
+/// (EasySendSMS). Results are stored in `delivery_logs` either way.
 class AppStore extends ChangeNotifier {
   AppStore._() {
     if (!isLive) loadSample(notify: false);
@@ -32,6 +34,7 @@ class AppStore extends ChangeNotifier {
   bool get isLive => SupabaseConfig.isConfigured;
 
   SupabaseRepo? _repo;
+  final SmsSender _smsSender = const SmsSender();
   RealtimeChannel? _channel;
   Future<void> _chain = Future<void>.value();
 
@@ -598,6 +601,15 @@ class AppStore extends ChangeNotifier {
       notifyListeners();
       return;
     }
+    if (!settings.testMode) {
+      // Real mode: messages go through the SMS provider (see _sendReal);
+      // the simulated phone gateway is not involved.
+      final wait = first ? const Duration(milliseconds: 700) : Duration(seconds: settings.delaySeconds);
+      nextSendAt = DateTime.now().add(wait);
+      notifyListeners();
+      _timer = Timer(wait, () => _sendReal(c, next));
+      return;
+    }
     if (!gateway.connected) {
       pauseQueue(reason: PauseReason.gateway);
       return;
@@ -626,6 +638,29 @@ class AppStore extends ChangeNotifier {
         _scheduleNext();
       });
     });
+  }
+
+  /// One real send (Test Mode OFF): the provider sends the message, then
+  /// the result is recorded exactly like a simulated gateway result.
+  Future<void> _sendReal(Campaign c, DeliveryLog log) async {
+    if (c.state != CampaignState.running) return;
+    log.status = DeliveryStatus.sending;
+    notifyListeners();
+    final ok = await _smsSender.send(log.phone, c.message);
+    // While the send was in flight the user may have paused/stopped the
+    // campaign or logged out — those paths already resolved this log.
+    if (log.status != DeliveryStatus.sending || !campaigns.contains(c)) return;
+    log
+      ..status = ok ? DeliveryStatus.sent : DeliveryStatus.failed
+      ..reason = ok ? null : FailReason.networkBusy
+      ..time = DateTime.now();
+    _push((r) => r.updateLog(log));
+    if (ok) {
+      settings.packageRemaining = max(0, settings.packageRemaining - c.segments);
+      _push((r) => r.saveSettings(settings));
+    }
+    notifyListeners();
+    _scheduleNext();
   }
 
   // ───────────────────────── Settings ─────────────────────────
@@ -680,6 +715,14 @@ class AppStore extends ChangeNotifier {
   }
 
   Future<bool> sendTestSms(String phone) async {
+    if (!settings.testMode) {
+      // Real mode: an actual SMS through the provider (no gateway needed).
+      final ok = await _smsSender.send(phone, 'Paigham test SMS — your SMS panel is working.');
+      if (!ok) return false;
+      _log(ActivityEvent.testSms, [Phone.format(phone)]);
+      notifyListeners();
+      return true;
+    }
     await Future<void>.delayed(const Duration(milliseconds: 1600));
     if (!gateway.connected) return false;
     _log(ActivityEvent.testSms, [Phone.format(phone)]);
