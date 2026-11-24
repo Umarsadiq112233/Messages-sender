@@ -175,13 +175,17 @@ class SupabaseRepo {
       .eq('id', campaignId)
       .eq('state', 'running');
 
-  /// Heartbeat from the gateway phone: liveness + device identity only.
-  /// Pair code / signal / battery are left to the panel's own writes.
+  /// Heartbeat from the gateway phone: liveness, device identity and
+  /// the phone's real battery (read fresh by the phone on every beat).
+  /// Pair code / signal / SIM number are deliberately not written —
+  /// the phone does not genuinely report them, so no stale values.
   Future<void> gatewayHeartbeat({
     required bool connected,
     String? deviceName,
     String? model,
     String? operator,
+    int? battery,
+    bool? charging,
     DisconnectReason? disconnectReason,
   }) => db
       .from('gateway')
@@ -191,6 +195,8 @@ class SupabaseRepo {
         if (deviceName != null) 'device_name': deviceName,
         if (model != null) 'model': model,
         if (operator != null && operator.isNotEmpty) 'operator': operator,
+        if (battery != null) 'battery': battery,
+        if (charging != null) 'charging': charging,
         'disconnect_reason': connected ? null : disconnectReason?.name,
       })
       .eq('id', 1);
