@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none">
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22C55E"/>
+      <stop offset="1" stop-color="#15803D"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="100" cy="82" rx="84" ry="68" fill="#EFF6FF"/>
+
+  <!-- spreadsheet back -->
+  <rect x="44" y="38" width="70" height="90" rx="10" fill="#FFFFFF" stroke="#DBEAFE" stroke-width="2" transform="rotate(-8 79 83)"/>
+  <!-- spreadsheet front -->
+  <rect x="70" y="30" width="72" height="94" rx="10" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="2"/>
+  <path d="M70 40 a10 10 0 0 1 10 -10 h52 a10 10 0 0 1 10 10 v8 h-72 Z" fill="url(#green)"/>
+  <path d="M80 62 h52 M80 76 h52 M80 90 h52 M80 104 h52 M100 50 v62" stroke="#D1FAE5" stroke-width="2"/>
+  <rect x="80" y="56" width="16" height="4" rx="2" fill="#86EFAC"/>
+  <rect x="104" y="56" width="26" height="4" rx="2" fill="#BBF7D0"/>
+  <rect x="80" y="70" width="14" height="4" rx="2" fill="#86EFAC"/>
+  <rect x="104" y="70" width="22" height="4" rx="2" fill="#BBF7D0"/>
+
+  <!-- upload badge -->
+  <circle cx="146" cy="116" r="22" fill="url(#blue)" stroke="#FFFFFF" stroke-width="4"/>
+  <path d="M146 127 v-20 M137 115 l9 -9 l9 9" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <circle cx="36" cy="52" r="4" fill="#BFDBFE"/>
+  <path d="M168 40 l2 5.5 l5.5 2 l-5.5 2 l-2 5.5 l-2 -5.5 l-5.5 -2 l5.5 -2 Z" fill="#60A5FA"/>
+</svg>

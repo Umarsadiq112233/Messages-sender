@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F0FDF4"/>
+      <stop offset="1" stop-color="#DCFCE7"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4ADE80"/>
+      <stop offset="1" stop-color="#15803D"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="160" cy="120" rx="116" ry="98" fill="url(#bg)"/>
+  <circle cx="160" cy="118" r="62" fill="#FFFFFF" fill-opacity="0.7"/>
+  <circle cx="160" cy="118" r="48" fill="url(#green)"/>
+  <path d="M136 118 l17 17 l32 -34" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- confetti -->
+  <rect x="64" y="58" width="12" height="6" rx="3" fill="#F59E0B" transform="rotate(-30 70 61)"/>
+  <rect x="244" y="52" width="12" height="6" rx="3" fill="#DB2777" transform="rotate(25 250 55)"/>
+  <rect x="254" y="160" width="12" height="6" rx="3" fill="#3B82F6" transform="rotate(-20 260 163)"/>
+  <rect x="52" y="160" width="12" height="6" rx="3" fill="#0D9488" transform="rotate(35 58 163)"/>
+  <circle cx="98" cy="40" r="5" fill="#60A5FA"/>
+  <circle cx="226" cy="30" r="4" fill="#F59E0B"/>
+  <circle cx="276" cy="108" r="5" fill="#4ADE80"/>
+  <circle cx="44" cy="112" r="4" fill="#DB2777"/>
+  <path d="M206 196 l2.5 7 l7 2.5 l-7 2.5 l-2.5 7 l-2.5 -7 l-7 -2.5 l7 -2.5 Z" fill="#F59E0B"/>
+  <path d="M104 190 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 Z" fill="#60A5FA"/>
+
+  <!-- little planes -->
+  <g transform="translate(232 82) rotate(-18)">
+    <path d="M0 10 L26 0 L19 22 L13 14 Z" fill="url(#blue)"/>
+    <path d="M13 14 L26 0 L10 12 Z" fill="#93C5FD"/>
+  </g>
+  <g transform="translate(66 86) rotate(-28) scale(0.75)">
+    <path d="M0 10 L26 0 L19 22 L13 14 Z" fill="url(#blue)"/>
+    <path d="M13 14 L26 0 L10 12 Z" fill="#93C5FD"/>
+  </g>
+</svg>

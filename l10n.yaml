@@ -1,0 +1,10 @@
+# Translations live in lib/l10n/*.arb — edit those files to change any text.
+#   app_ur_Latn.arb  Roman Urdu (default, template)
+#   app_en.arb       English
+#   app_ur.arb       Urdu (اردو, right-to-left)
+arb-dir: lib/l10n
+template-arb-file: app_ur_Latn.arb
+output-localization-file: app_localizations.dart
+output-dir: lib/l10n/generated
+nullable-getter: false
+untranslated-messages-file: build/untranslated.json

@@ -1,0 +1,2003 @@
+{
+  "@@locale": "ur_Latn",
+  "cancel": "Cancel",
+  "@cancel": {},
+  "save": "Save",
+  "@save": {},
+  "create": "Create",
+  "@create": {},
+  "back": "Back",
+  "@back": {},
+  "close": "Band karo",
+  "@close": {},
+  "confirmDelete": "Haan, delete karo",
+  "@confirmDelete": {},
+  "keepIt": "Nahi, rehne do",
+  "@keepIt": {},
+  "edit": "Edit",
+  "@edit": {},
+  "delete": "Delete",
+  "@delete": {},
+  "rename": "Rename",
+  "@rename": {},
+  "actions": "Actions",
+  "@actions": {},
+  "copy": "Copy",
+  "@copy": {},
+  "clear": "Saaf karo",
+  "@clear": {},
+  "searchHint": "Name ya number se dhoondo…",
+  "@searchHint": {},
+  "decrease": "Kam karo",
+  "@decrease": {},
+  "increase": "Barhao",
+  "@increase": {},
+  "noGroup": "Bina group",
+  "@noGroup": {},
+  "toastSuccess": "Kamyab",
+  "@toastSuccess": {},
+  "toastError": "Masla",
+  "@toastError": {},
+  "toastWarning": "Tawajjo",
+  "@toastWarning": {},
+  "toastInfo": "Maloomat",
+  "@toastInfo": {},
+  "statusSent": "Sent",
+  "@statusSent": {},
+  "statusFailed": "Failed",
+  "@statusFailed": {},
+  "statusPending": "Pending",
+  "@statusPending": {},
+  "statusSending": "Ja raha hai",
+  "@statusSending": {},
+  "on": "ON",
+  "@on": {},
+  "off": "OFF",
+  "@off": {},
+  "sec": "sec",
+  "@sec": {},
+  "appTagline": "Ek click — har number tak paigham",
+  "@appTagline": {},
+  "navDashboard": "Dashboard",
+  "@navDashboard": {},
+  "navDatabase": "Database",
+  "@navDatabase": {},
+  "navGroups": "Groups",
+  "@navGroups": {},
+  "navSend": "Send SMS",
+  "navSendShort": "Send SMS",
+  "@navSend": {},
+  "@navSendShort": {},
+  "navQueue": "Sending Queue",
+  "@navQueue": {},
+  "navReports": "Reports",
+  "@navReports": {},
+  "navGateway": "Gateway",
+  "@navGateway": {},
+  "navSettings": "Settings",
+  "@navSettings": {},
+  "navSectionMain": "MAIN",
+  "@navSectionMain": {},
+  "navSectionMessaging": "MESSAGING",
+  "@navSectionMessaging": {},
+  "navSectionSystem": "SYSTEM",
+  "@navSectionSystem": {},
+  "navAddNumber": "Add Number",
+  "@navAddNumber": {},
+  "navBulkImport": "Bulk Import",
+  "@navBulkImport": {},
+  "navEditNumber": "Edit Number",
+  "@navEditNumber": {},
+  "navHome": "Home",
+  "@navHome": {},
+  "navMore": "More",
+  "@navMore": {},
+  "moreTitle": "Aur options",
+  "@moreTitle": {},
+  "moreSubtitle": "Panel ke baqi hissay yahan se kholein",
+  "@moreSubtitle": {},
+  "logoutTitle": "Logout karna hai?",
+  "@logoutTitle": {},
+  "logoutMessage": "Aap panel se bahar aa jayenge. Dobara andar aane ke liye login karna hoga.",
+  "@logoutMessage": {},
+  "logoutConfirm": "Haan, logout",
+  "@logoutConfirm": {},
+  "logoutDone": "Aap logout ho gaye. Phir milenge!",
+  "@logoutDone": {},
+  "logout": "Logout",
+  "@logout": {},
+  "gatewayOnlineLower": "Gateway online",
+  "@gatewayOnlineLower": {},
+  "gatewayOfflineLower": "Gateway offline",
+  "@gatewayOfflineLower": {},
+  "gatewayOnline": "Gateway Online",
+  "@gatewayOnline": {},
+  "gatewayOffline": "Gateway Offline",
+  "@gatewayOffline": {},
+  "roleAdmin": "Admin",
+  "@roleAdmin": {},
+  "topSearchHint": "Number ya naam dhoondo…",
+  "@topSearchHint": {},
+  "livePaused": "Paused {done}/{total}",
+  "@livePaused": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "liveSending": "Sending {done}/{total}",
+  "@liveSending": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "gatewayStatusTooltip": "Gateway / Device status",
+  "@gatewayStatusTooltip": {},
+  "account": "Account",
+  "@account": {},
+  "adminSubtitle": "admin · Administrator",
+  "@adminSubtitle": {},
+  "gatewayDevice": "Gateway / Device",
+  "@gatewayDevice": {},
+  "backTooltip": "Wapas",
+  "@backTooltip": {},
+  "language": "Zaban / Language",
+  "@language": {},
+  "languageSub": "Panel kis zaban mein dikhe",
+  "@languageSub": {},
+  "languageChanged": "Zaban badal di gayi",
+  "@languageChanged": {},
+  "languageDefault": "Default",
+  "@languageDefault": {},
+  "splashStep1": "Panel tayyar ho raha hai…",
+  "@splashStep1": {},
+  "splashStep2": "Database load ho raha hai…",
+  "@splashStep2": {},
+  "splashStep3": "Gateway check ho raha hai…",
+  "@splashStep3": {},
+  "splashStep4": "Bas aik lamha…",
+  "@splashStep4": {},
+  "agoNow": "abhi abhi",
+  "@agoNow": {},
+  "agoMinutes": "{count} min pehle",
+  "@agoMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{count} ghante pehle",
+  "@agoHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agoYesterday": "kal",
+  "@agoYesterday": {},
+  "agoDays": "{count} din pehle",
+  "@agoDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "greetMorning": "Subah bakhair",
+  "@greetMorning": {},
+  "greetDay": "Assalam-o-Alaikum",
+  "@greetDay": {},
+  "greetEvening": "Shaam bakhair",
+  "@greetEvening": {},
+  "durHoursMinutes": "{hours} ghanta {minutes} min",
+  "@durHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durMinutesSeconds": "{minutes} min {seconds} sec",
+  "@durMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "durSeconds": "{seconds} sec",
+  "@durSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "phoneEmpty": "Mobile number likhna zaroori hai",
+  "@phoneEmpty": {},
+  "phonePrefix": "Number 03 se shuru hona chahiye",
+  "@phonePrefix": {},
+  "phoneTooShort": "11 digits chahiye — abhi {count} hain",
+  "@phoneTooShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "phoneTooLong": "Number 11 digits se lamba hai",
+  "@phoneTooLong": {},
+  "actContactAdded": "Naya number add hua",
+  "@actContactAdded": {},
+  "actContactEdited": "Number update hua",
+  "@actContactEdited": {},
+  "actContactDeleted": "Number delete hua",
+  "@actContactDeleted": {},
+  "actContactsDeleted": "{count} numbers delete hue",
+  "@actContactsDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actContactsDeletedSub": "Database se hata diye gaye",
+  "@actContactsDeletedSub": {},
+  "actImported": "Bulk import mukammal",
+  "@actImported": {},
+  "actImportedSub": "{count} numbers add hue",
+  "@actImportedSub": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actGroupCreated": "Naya group bana",
+  "@actGroupCreated": {},
+  "actGroupRenamed": "Group ka naam badla",
+  "@actGroupRenamed": {},
+  "actGroupDeleted": "Group delete hua",
+  "@actGroupDeleted": {},
+  "actCampaignStarted": "Campaign shuru hui",
+  "@actCampaignStarted": {},
+  "actCampaignStartedSub": "{count} numbers ko ja rahi hai",
+  "@actCampaignStartedSub": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actCampaignSent": "Campaign bheji gayi",
+  "@actCampaignSent": {},
+  "actCampaignSentSub": "{sent} numbers ko gaya · {failed} failed",
+  "@actCampaignSentSub": {
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "actCampaignStopped": "Campaign rok di gayi",
+  "@actCampaignStopped": {},
+  "actCampaignStoppedSub": "{sent} gaye · {notSent} nahi gaye",
+  "@actCampaignStoppedSub": {
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "notSent": {
+        "type": "int"
+      }
+    }
+  },
+  "actCampaignCompleted": "Campaign mukammal",
+  "@actCampaignCompleted": {},
+  "actCampaignCompletedSub": "{sent} gaye · {failed} failed",
+  "@actCampaignCompletedSub": {
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "actPasswordChanged": "Password tabdeel hua",
+  "@actPasswordChanged": {},
+  "actPasswordChangedSub": "Account security update",
+  "@actPasswordChangedSub": {},
+  "actLimitsSaved": "Package / limit update",
+  "@actLimitsSaved": {},
+  "actLimitsSavedSub": "Roz ki limit {limit} · baqi {left}",
+  "@actLimitsSavedSub": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "actSendingSaved": "Sending settings update",
+  "@actSendingSaved": {},
+  "actSendingSavedSub": "Waqfa {secs}s · Test mode {mode}",
+  "@actSendingSavedSub": {
+    "placeholders": {
+      "secs": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "actGatewayConnected": "Gateway connect hua",
+  "@actGatewayConnected": {},
+  "actGatewayConnectedSub": "{device} online",
+  "@actGatewayConnectedSub": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "actGatewayDisconnected": "Gateway disconnect hua",
+  "@actGatewayDisconnected": {},
+  "actGatewayDisconnectedSub": "Phone se rabta toot gaya",
+  "@actGatewayDisconnectedSub": {},
+  "actTestSms": "Test SMS bheja",
+  "@actTestSms": {},
+  "failNetworkBusy": "Network busy — dobara koshish",
+  "@failNetworkBusy": {},
+  "failNumberOff": "Number band hai",
+  "@failNumberOff": {},
+  "failTimeout": "Delivery timeout",
+  "@failTimeout": {},
+  "failLowBalance": "SIM balance kam",
+  "@failLowBalance": {},
+  "failNotExist": "Number mojood nahi",
+  "@failNotExist": {},
+  "failStopped": "Rok diya gaya (Stop)",
+  "@failStopped": {},
+  "audAll": "All Numbers",
+  "@audAll": {},
+  "audGroup": "Group: {name}",
+  "@audGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audSelected": "Selected ({count})",
+  "@audSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audRetry": "Failed dobara ({count})",
+  "@audRetry": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audTest": "Test",
+  "@audTest": {},
+  "pauseUser": "Aap ne pause kiya",
+  "@pauseUser": {},
+  "pauseGateway": "Gateway disconnected — phone check karein",
+  "@pauseGateway": {},
+  "discLost": "Phone se rabta toot gaya (internet band ya app band)",
+  "@discLost": {},
+  "discByUser": "Aap ne panel se disconnect kiya",
+  "@discByUser": {},
+  "impNoNumber": "Number nahi mila",
+  "@impNoNumber": {},
+  "impInDatabase": "Pehle se database mein",
+  "@impInDatabase": {},
+  "impRepeated": "List mein do baar",
+  "@impRepeated": {},
+  "loginFeat1Title": "Bulk import",
+  "@loginFeat1Title": {},
+  "loginFeat1Sub": "Excel / CSV ya list paste — seconds mein",
+  "@loginFeat1Sub": {},
+  "loginFeat2Title": "Live sending queue",
+  "@loginFeat2Title": {},
+  "loginFeat2Sub": "Har SMS ki halat saamne",
+  "@loginFeat2Sub": {},
+  "loginFeat3Title": "Reports & export",
+  "@loginFeat3Title": {},
+  "loginFeat3Sub": "Ek click mein Excel report",
+  "@loginFeat3Sub": {},
+  "loginHeadline": "Ek click mein\nhazaron tak paigham.",
+  "@loginHeadline": {},
+  "loginHeadlineSub": "Numbers ka database, groups, live sending aur reports — sab ek jagah.",
+  "@loginHeadlineSub": {},
+  "usernameRequired": "Username likhein",
+  "@usernameRequired": {},
+  "passwordRequired": "Password likhein",
+  "@passwordRequired": {},
+  "loginWelcomeToast": "Khush aamdeed, {name}! Panel tayyar hai.",
+  "@loginWelcomeToast": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "loginSuccess": "Login kamyab",
+  "@loginSuccess": {},
+  "loginWrong": "Username ya password galat hai. Dobara koshish karein.",
+  "@loginWrong": {},
+  "loginTitle": "Wapas khush aamdeed",
+  "@loginTitle": {},
+  "loginSubtitle": "Apne {app} SMS panel mein login karein",
+  "@loginSubtitle": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "loginFailed": "Login nahi hua",
+  "@loginFailed": {},
+  "username": "Username",
+  "@username": {},
+  "usernameHint": "apna username likhein",
+  "@usernameHint": {},
+  "password": "Password",
+  "@password": {},
+  "hidePassword": "Password chhupao",
+  "@hidePassword": {},
+  "showPassword": "Password dikhao",
+  "@showPassword": {},
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": {},
+  "loggingIn": "Login ho raha hai…",
+  "@loggingIn": {},
+  "login": "Login",
+  "@login": {},
+  "forgotTitle": "Password bhool gaye?",
+  "@forgotTitle": {},
+  "forgotSubtitle": "Fikar na karein — reset code SMS par aa jayega",
+  "@forgotSubtitle": {},
+  "registeredMobile": "Registered mobile number",
+  "@registeredMobile": {},
+  "forgotAdminHint": "Ya admin (Umar) se rabta karein — woh password reset kar sakte hain.",
+  "@forgotAdminHint": {},
+  "sendResetCode": "Reset code bhejo",
+  "@sendResetCode": {},
+  "enterValidMobile": "Sahi mobile number likhein (03XX-XXXXXXX)",
+  "@enterValidMobile": {},
+  "resetCodeSent": "Reset code {phone} par bhej diya gaya (demo).",
+  "@resetCodeSent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "codeSent": "Code bhej diya",
+  "@codeSent": {},
+  "demoLogin": "Demo login:",
+  "@demoLogin": {},
+  "fill": "Bharo",
+  "@fill": {},
+  "greetingName": "{greeting}, {name}",
+  "@greetingName": {
+    "placeholders": {
+      "greeting": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashSubtitle": "{weekday}, {date} — panel ka poora haal ek nazar mein",
+  "@dashSubtitle": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "statTotalNumbers": "Total Numbers",
+  "@statTotalNumbers": {},
+  "statInGroups": "{count} groups mein",
+  "@statInGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statToday": "Aaj Bhejay Gaye SMS",
+  "@statToday": {},
+  "statDailyLimit": "{today} / {limit} roz ki limit",
+  "@statDailyLimit": {
+    "placeholders": {
+      "today": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "statTotalSent": "Total Sent",
+  "@statTotalSent": {},
+  "statSuccessRate": "{rate}% kamyabi",
+  "@statSuccessRate": {
+    "placeholders": {
+      "rate": {
+        "type": "int"
+      }
+    }
+  },
+  "statNoFailures": "Koi failure nahi",
+  "@statNoFailures": {},
+  "statRetryFromReports": "Reports se dobara bhejein",
+  "@statRetryFromReports": {},
+  "quickAction": "QUICK ACTION",
+  "@quickAction": {},
+  "quickTitle": "Naya SMS bhejna hai?",
+  "@quickTitle": {},
+  "quickSubtitle": "Group chunein, message likhein — ek click mein sab tak.",
+  "@quickSubtitle": {},
+  "sendNewSms": "Naya SMS Bhejo",
+  "@sendNewSms": {},
+  "chartTitle": "Pichle 7 din ke SMS",
+  "@chartTitle": {},
+  "chartSubtitleData": "{amount} SMS kamyabi se gaye",
+  "@chartSubtitleData": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "chartSubtitleEmpty": "Roz ka graph yahan nazar aayega",
+  "@chartSubtitleEmpty": {},
+  "emptyNoSmsTitle": "Abhi koi SMS nahi gaya",
+  "@emptyNoSmsTitle": {},
+  "emptyNoSmsMsg": "Pehla SMS bhejein — phir yahan roz ka graph nazar aayega.",
+  "@emptyNoSmsMsg": {},
+  "countSent": "{count} sent",
+  "@countSent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "countFailed": "{count} failed",
+  "@countFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "today": "Aaj",
+  "@today": {},
+  "todayLower": "aaj",
+  "@todayLower": {},
+  "recentActivity": "Recent Activity",
+  "@recentActivity": {},
+  "last5": "Aakhri 5 kaam",
+  "@last5": {},
+  "noActivityTitle": "Abhi koi activity nahi",
+  "@noActivityTitle": {},
+  "noActivityMsg": "Number add karein ya SMS bhejein — yahan sab nazar aayega.",
+  "@noActivityMsg": {},
+  "packageLimit": "Package & Limit",
+  "@packageLimit": {},
+  "packageLimitSub": "Aaj ki limit aur baqi SMS",
+  "@packageLimitSub": {},
+  "sentToday": "Aaj bheje",
+  "@sentToday": {},
+  "leftToday": "Aaj baqi",
+  "@leftToday": {},
+  "smsCount": "{count} SMS",
+  "@smsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "packageLeft": "Package mein baqi",
+  "@packageLeft": {},
+  "changeLimit": "Limit badlo",
+  "@changeLimit": {},
+  "gatewayConnected": "Gateway Connected",
+  "@gatewayConnected": {},
+  "gatewayNotConnected": "Gateway Not Connected",
+  "@gatewayNotConnected": {},
+  "deviceBattery": "{device} · {battery}% battery",
+  "@deviceBattery": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      },
+      "battery": {
+        "type": "int"
+      }
+    }
+  },
+  "checkPhoneQueueStops": "Phone check karein — queue ruk jayegi",
+  "@checkPhoneQueueStops": {},
+  "deleteConfirmTitle": "Pakka delete karna hai?",
+  "@deleteConfirmTitle": {},
+  "deleteConfirmMsg": "\"{name}\" ({phone}) database se hat jayega. Ye wapas nahi aayega.",
+  "@deleteConfirmMsg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "deletedOne": "{name} database se hata diya gaya",
+  "@deletedOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "numberDeleted": "Number delete ho gaya",
+  "@numberDeleted": {},
+  "deleteManyTitle": "{count} numbers delete karne hain?",
+  "@deleteManyTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteManyMsg": "Chune hue {count} numbers database se hamesha ke liye hat jayenge. Ye wapas nahi aayenge.",
+  "@deleteManyMsg": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteManyConfirm": "Haan, {count} delete karo",
+  "@deleteManyConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deletedMany": "{count} numbers database se hata diye gaye",
+  "@deletedMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deletedManyTitle": "Delete ho gaye",
+  "@deletedManyTitle": {},
+  "numbersSummary": "{numbers} numbers · {groups} groups",
+  "@numbersSummary": {
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      },
+      "groups": {
+        "type": "String"
+      }
+    }
+  },
+  "importAction": "Import",
+  "@importAction": {},
+  "sort": "Sort",
+  "@sort": {},
+  "sortNewest": "Naye pehle",
+  "@sortNewest": {},
+  "sortOldest": "Purane pehle",
+  "@sortOldest": {},
+  "sortName": "Naam A–Z",
+  "@sortName": {},
+  "colName": "NAME",
+  "@colName": {},
+  "colMobile": "MOBILE NUMBER",
+  "@colMobile": {},
+  "colGroup": "GROUP",
+  "@colGroup": {},
+  "colAdded": "ADD HONE KI DATE",
+  "@colAdded": {},
+  "colActions": "ACTIONS",
+  "@colActions": {},
+  "showingRange": "Dikha rahe hain {from}–{to} / {total}",
+  "@showingRange": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "group": "Group",
+  "@group": {},
+  "allGroups": "Saare groups",
+  "@allGroups": {},
+  "dbEmptyTitle": "Database abhi khaali hai",
+  "@dbEmptyTitle": {},
+  "dbEmptyMsg": "Pehla number add karein ya Excel / list se ek saath import karein.",
+  "@dbEmptyMsg": {},
+  "noResultsTitle": "Is query par koi number nahi mila",
+  "@noResultsTitle": {},
+  "noResultsGroup": "Is group mein abhi koi number nahi.",
+  "@noResultsGroup": {},
+  "noResultsQuery": "\"{query}\" se milta julta koi naam ya number nahi hai.",
+  "@noResultsQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "clearFilter": "Filter saaf karo",
+  "@clearFilter": {},
+  "all": "Sab",
+  "@all": {},
+  "numbersFound": "{count} numbers mile",
+  "@numbersFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadMore": "Load more ({count} baqi)",
+  "@loadMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearSelection": "Selection hatao",
+  "@clearSelection": {},
+  "sendSmsShort": "SMS bhejo",
+  "@sendSmsShort": {},
+  "prev": "Pichla",
+  "@prev": {},
+  "next": "Agla",
+  "@next": {},
+  "dupWithName": "Ye number pehle se database mein hai ({name}).",
+  "@dupWithName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForm": "Form check karein",
+  "@checkForm": {},
+  "notSaved": "Save nahi hua",
+  "@notSaved": {},
+  "numberSaved": "Number save ho gaya",
+  "@numberSaved": {},
+  "numberInfo": "Number ki maloomat",
+  "@numberInfo": {},
+  "onlyMobileRequired": "Sirf mobile number zaroori hai",
+  "@onlyMobileRequired": {},
+  "addedHere": "{count} add hue",
+  "@addedHere": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "saveAndAddAnother": "Save & Add Another",
+  "@saveAndAddAnother": {},
+  "addAnotherShort": "+ Aur",
+  "@addAnotherShort": {},
+  "newNumber": "Naya Number",
+  "@newNumber": {},
+  "newNumberSub": "Database mein ek number daalein",
+  "@newNumberSub": {},
+  "addNumberTitle": "Naya Number Add Karo",
+  "@addNumberTitle": {},
+  "dbHasNumbers": "Database mein abhi {count} numbers hain",
+  "@dbHasNumbers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tip1": "Number 03 se shuru ho aur 11 digits ka ho",
+  "@tip1": {},
+  "tip2": "+92 300… likhein to bhi khud 0300… ban jayega",
+  "@tip2": {},
+  "tip3": "Group chunne se baad mein group ko SMS bhejna aasan",
+  "@tip3": {},
+  "tips": "Tips",
+  "@tips": {},
+  "manyNumbersQ": "Bohat saare numbers hain?",
+  "@manyNumbersQ": {},
+  "useBulkImport": "Bulk import se ek saath daalein",
+  "@useBulkImport": {},
+  "detailsUpdated": "{name} ki maloomat update ho gayi",
+  "@detailsUpdated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "changesSaved": "Changes save ho gaye",
+  "@changesSaved": {},
+  "numberNotFound": "Number nahi mila",
+  "@numberNotFound": {},
+  "maybeDeleted": "Ye number shayad delete ho chuka hai.",
+  "@maybeDeleted": {},
+  "backToDb": "Database par wapas",
+  "@backToDb": {},
+  "editDetails": "Maloomat badlein",
+  "@editDetails": {},
+  "unsavedChanges": "Aap ne kuch tabdeeli ki hai — save karna na bhoolein",
+  "@unsavedChanges": {},
+  "editHint": "Koi bhi field badal kar save karein",
+  "@editHint": {},
+  "saveChanges": "Save Changes",
+  "@saveChanges": {},
+  "numberDetails": "Is number ki tafseel",
+  "@numberDetails": {},
+  "dateAdded": "Add hone ki date",
+  "@dateAdded": {},
+  "smsSentCount": "Kitne SMS gaye",
+  "@smsSentCount": {},
+  "lastSms": "Aakhri SMS",
+  "@lastSms": {},
+  "smsHistory": "SMS history",
+  "@smsHistory": {},
+  "lastNSms": "Aakhri {count} SMS",
+  "@lastNSms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyEmptyMsg": "Is number ko bheje gaye SMS yahan nazar aayenge.",
+  "@historyEmptyMsg": {},
+  "dangerZone": "Danger zone",
+  "@dangerZone": {},
+  "removedForever": "Number hamesha ke liye hat jayega",
+  "@removedForever": {},
+  "deleteNumber": "Delete Number",
+  "@deleteNumber": {},
+  "noChanges": "Koi tabdeeli nahi",
+  "@noChanges": {},
+  "dupNumber": "Ye number pehle se database mein hai",
+  "@dupNumber": {},
+  "name": "Name",
+  "@name": {},
+  "nameHint": "Masalan: Ali Raza",
+  "@nameHint": {},
+  "mobileNumber": "Mobile Number",
+  "@mobileNumber": {},
+  "mobileHelper": "11 digits — dash khud lag jayega",
+  "@mobileHelper": {},
+  "savedUnder": "\"{name}\" ke naam se {group} mein save hai.",
+  "@savedUnder": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "openThatNumber": "Woh number kholo",
+  "@openThatNumber": {},
+  "noteOptional": "Note (optional)",
+  "@noteOptional": {},
+  "noteHint": "Koi zaroori baat… (masalan: fee pending)",
+  "@noteHint": {},
+  "typeName": "Naam likhein…",
+  "@typeName": {},
+  "livePreview": "Live preview",
+  "@livePreview": {},
+  "previewSub": "Database mein aise nazar aayega",
+  "@previewSub": {},
+  "chooseFile": "Excel / CSV file chunein",
+  "@chooseFile": {},
+  "fileRows": "{file} se {count} rows mili",
+  "@fileRows": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fileRead": "File parh li",
+  "@fileRead": {},
+  "fileError": "Ye file parhi nahi ja saki. CSV ya .xlsx file try karein.",
+  "@fileError": {},
+  "fileProblem": "File ka masla",
+  "@fileProblem": {},
+  "importedToDb": "{count} numbers database mein add ho gaye",
+  "@importedToDb": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importDone": "Import mukammal",
+  "@importDone": {},
+  "importBtn": "Import Karo",
+  "@importBtn": {},
+  "importBtnCount": "Import Karo ({count} numbers)",
+  "@importBtnCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importSub": "Ek saath bohat saare numbers daalein",
+  "@importSub": {},
+  "noValidNumbers": "Koi theek number nahi mila — list check karein",
+  "@noValidNumbers": {},
+  "importSubDesktop": "List paste karein ya Excel / CSV file upload karein — waqt bachayein",
+  "@importSubDesktop": {},
+  "whereFrom": "Numbers kahan se?",
+  "@whereFrom": {},
+  "twoWays": "Do tareeqay — jo aasan lage",
+  "@twoWays": {},
+  "listPaste": "List Paste",
+  "@listPaste": {},
+  "fileUpload": "File Upload",
+  "@fileUpload": {},
+  "whichGroup": "Ye numbers kis group mein jayen?",
+  "@whichGroup": {},
+  "newGroupShort": "Naya group",
+  "@newGroupShort": {},
+  "pasteHint": "Ek line mein ek number…\n0300-1234567\nAli Raza, 0321-7654321\n+92 333 1112223",
+  "@pasteHint": {},
+  "pasteTip": "\"Naam, Number\" bhi likh sakte hain",
+  "@pasteTip": {},
+  "fillSample": "Sample bharo",
+  "@fillSample": {},
+  "dropHere": "Chhor dein — hum parh lenge",
+  "@dropHere": {},
+  "dropFileDesktop": "Excel / CSV file yahan chhorein",
+  "@dropFileDesktop": {},
+  "fileFormatsHint": ".xlsx, .csv ya .txt — pehla column naam, doosra number",
+  "@fileFormatsHint": {},
+  "reading": "Parh rahe hain…",
+  "@reading": {},
+  "pickFile": "File chunein",
+  "@pickFile": {},
+  "rowsCount": "{count} rows",
+  "@rowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFile": "File hatao",
+  "@removeFile": {},
+  "preview": "Preview",
+  "@preview": {},
+  "previewEmptySub": "Numbers daalte hi yahan check ho jayenge",
+  "@previewEmptySub": {},
+  "rowsFound": "{count} rows mili",
+  "@rowsFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nothingYet": "Abhi kuch nahi",
+  "@nothingYet": {},
+  "previewEmptyMsg": "List paste karein ya file chunein — har number yahan check hoga.",
+  "@previewEmptyMsg": {},
+  "found": "Mile",
+  "@found": {},
+  "valid": "Theek",
+  "@valid": {},
+  "duplicate": "Duplicate",
+  "@duplicate": {},
+  "badFormat": "Galat format",
+  "@badFormat": {},
+  "moreRows": "…aur {count} rows",
+  "@moreRows": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "step1": "Numbers do",
+  "@step1": {},
+  "step2": "Preview check karo",
+  "@step2": {},
+  "step3": "Import karo",
+  "@step3": {},
+  "invalidShort": "Galat",
+  "@invalidShort": {},
+  "importComplete": "Import mukammal!",
+  "@importComplete": {},
+  "importSummary": "{total} mein se {added} add hue, {dup} duplicate, {bad} galat",
+  "@importSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "added": {
+        "type": "int"
+      },
+      "dup": {
+        "type": "int"
+      },
+      "bad": {
+        "type": "int"
+      }
+    }
+  },
+  "groupSuffix": " · Group: {name}",
+  "@groupSuffix": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addedLabel": "Add hue",
+  "@addedLabel": {},
+  "importMore": "Aur import karo",
+  "@importMore": {},
+  "viewDatabase": "Database dekho",
+  "@viewDatabase": {},
+  "groupDeleteTitle": "\"{name}\" delete karna hai?",
+  "@groupDeleteTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupDeleteEmpty": "Ye group khaali hai. Delete karne ke baad wapas nahi aayega.",
+  "@groupDeleteEmpty": {},
+  "groupDeleteWithNumbers": "Is group mein {count} numbers hain. Numbers delete NAHI honge — woh \"Bina group\" mein chale jayenge. Group wapas nahi aayega.",
+  "@groupDeleteWithNumbers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleteConfirm": "Haan, group delete karo",
+  "@groupDeleteConfirm": {},
+  "groupRemoved": "\"{name}\" hata diya gaya",
+  "@groupRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRemovedMoved": "\"{name}\" hata diya — {count} numbers \"Bina group\" mein",
+  "@groupRemovedMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "Group delete ho gaya",
+  "@groupDeleted": {},
+  "newGroup": "New Group",
+  "@newGroup": {},
+  "groupsSubtitle": "{count} groups · numbers ko groups mein rakhein taake SMS bhejna aasan ho",
+  "@groupsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noGroupsTitle": "Abhi koi group nahi",
+  "@noGroupsTitle": {},
+  "noGroupsMsg": "Groups banayein — masalan \"Customers\", \"Students\" — phir poore group ko ek click mein SMS bhejein.",
+  "@noGroupsMsg": {},
+  "firstGroup": "Pehla group banao",
+  "@firstGroup": {},
+  "numbersWord": " numbers",
+  "@numbersWord": {},
+  "createdOn": "Bana: {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noNumbersYet": "Abhi koi number nahi",
+  "@noNumbersYet": {},
+  "smsShort": "SMS",
+  "@smsShort": {},
+  "smsThisGroup": "Is group ko SMS bhejo",
+  "@smsThisGroup": {},
+  "ungroupedCount": "{count} numbers kisi group mein nahi",
+  "@ungroupedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createNewGroup": "Naya group banao",
+  "@createNewGroup": {},
+  "groupNameRequired": "Group ka naam likhein",
+  "@groupNameRequired": {},
+  "groupNameExists": "\"{name}\" naam ka group pehle se hai",
+  "@groupNameExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedMsg": "\"{name}\" group ban gaya",
+  "@groupCreatedMsg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreated": "Group create ho gaya",
+  "@groupCreated": {},
+  "newNameMsg": "Naya naam: \"{name}\"",
+  "@newNameMsg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamed": "Group rename ho gaya",
+  "@groupRenamed": {},
+  "renameGroup": "Group rename karo",
+  "@renameGroup": {},
+  "newGroupTitle": "Naya Group",
+  "@newGroupTitle": {},
+  "currentName": "Abhi naam: {name}",
+  "@currentName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "newGroupSub": "Numbers ko group mein rakhein — group ko SMS bhejna aasan",
+  "@newGroupSub": {},
+  "groupName": "Group ka naam",
+  "@groupName": {},
+  "groupNameHint": "Masalan: Customers",
+  "@groupNameHint": {},
+  "groupSuggestions": "Customers|Students|VIP Clients|Family|Wholesale|Staff",
+  "@groupSuggestions": {},
+  "tplSaleTitle": "Sale / Offer",
+  "@tplSaleTitle": {},
+  "tplSale": "Assalam-o-Alaikum! Hamari special offer shuru ho gayi hai — har cheez par 20% off. Aaj hi tashreef layen. Shukriya!",
+  "@tplSale": {},
+  "tplPaymentTitle": "Payment reminder",
+  "@tplPaymentTitle": {},
+  "tplPayment": "Reminder: Aap ki payment 25 tareekh tak jama karwa dein. Kisi sawal ke liye isi number par rabta karein. Shukriya.",
+  "@tplPayment": {},
+  "tplClassTitle": "Class / Meeting",
+  "@tplClassTitle": {},
+  "tplClass": "Dear Student, kal ki class subah 10 baje hogi. Waqt par pohanchein aur assignment saath layen.",
+  "@tplClass": {},
+  "tplEidTitle": "Eid Mubarak (Urdu)",
+  "@tplEidTitle": {},
+  "tplEid": "عید مبارک! آپ اور آپ کے اہل خانہ کو دلی مبارکباد۔ اللہ آپ کو ڈھیروں خوشیاں دے۔",
+  "@tplEid": {},
+  "blockNoMessage": "Pehle message likhein",
+  "@blockNoMessage": {},
+  "blockNoRecipients": "Koi recipient nahi — numbers chunein",
+  "@blockNoRecipients": {},
+  "blockGateway": "Gateway connected nahi — pehle phone connect karein",
+  "@blockGateway": {},
+  "blockRunning": "Pehli sending abhi chal rahi hai — Queue dekhein",
+  "@blockRunning": {},
+  "blockPackage": "Package mein itne SMS baqi nahi",
+  "@blockPackage": {},
+  "sendConfirmTitle": "Send karun?",
+  "@sendConfirmTitle": {},
+  "sendConfirmMsg": "{count} numbers, {segments} SMS segment each — kul {total} SMS.",
+  "@sendConfirmMsg": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "segments": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sendConfirmTestNote": "\n\nTest mode ON hai — asal SMS nahi jayenge, sirf simulation.",
+  "@sendConfirmTestNote": {},
+  "yesSend": "Haan, Send karo",
+  "@yesSend": {},
+  "notNow": "Abhi nahi",
+  "@notNow": {},
+  "queueCreated": "{count} numbers ki queue ban gayi — live progress dekhein",
+  "@queueCreated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendingStarted": "Sending shuru!",
+  "@sendingStarted": {},
+  "buildingQueue": "Queue ban rahi hai…",
+  "@buildingQueue": {},
+  "composeSubMobile": "Message likhein aur ek click mein bhejein",
+  "@composeSubMobile": {},
+  "phonePreviewQ": "Phone par kaisa lagega?",
+  "@phonePreviewQ": {},
+  "stickySummary": "{count} numbers · {total} SMS",
+  "@stickySummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "composeSubDesktop": "Recipients chunein, message likhein — ek click mein sab tak",
+  "@composeSubDesktop": {},
+  "gatewayNotConnectedShort": "Gateway connected nahi",
+  "@gatewayNotConnectedShort": {},
+  "gatewayWarnMsg": "Android phone se rabta nahi — SMS queue ruk jayegi. Pehle gateway connect karein.",
+  "@gatewayWarnMsg": {},
+  "openGateway": "Gateway kholo",
+  "@openGateway": {},
+  "modeSelected": "Selected",
+  "@modeSelected": {},
+  "countNumbers": "{count} numbers",
+  "@countNumbers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "countGroups": "{count} groups",
+  "@countGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "whoToSend": "Kisko bhejna hai?",
+  "@whoToSend": {},
+  "threeWays": "Teen tareeqay — sab, group, ya chune hue",
+  "@threeWays": {},
+  "noGroupMade": "Abhi koi group nahi bana.",
+  "@noGroupMade": {},
+  "makeGroup": "Group banao",
+  "@makeGroup": {},
+  "noneSelectedTitle": "Abhi koi number chuna nahi",
+  "@noneSelectedTitle": {},
+  "noneSelectedMsg": "Database mein checkbox se numbers chunein, phir yahan wapas aayen.",
+  "@noneSelectedMsg": {},
+  "openDatabase": "Database kholo",
+  "@openDatabase": {},
+  "willGoToSuffix": " numbers ko jayega",
+  "@willGoToSuffix": {},
+  "message": "Message",
+  "@message": {},
+  "smsRule": "English: 160 = 1 SMS · Urdu: 70 = 1 SMS",
+  "@smsRule": {},
+  "templates": "Templates",
+  "@templates": {},
+  "messageHint": "Yahan apna message likhein…\n\nMasalan: Assalam-o-Alaikum! Hamari nayi offer…",
+  "@messageHint": {},
+  "encUnicode": "Urdu / Unicode",
+  "@encUnicode": {},
+  "encGsm": "English (GSM)",
+  "@encGsm": {},
+  "charsCount": "{count} characters",
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "charsLeft": "{count} characters baqi is SMS mein",
+  "@charsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "longMessage": "Lamba message {segments} hisson mein jayega (har hissa {per} characters) — kharcha {segments}x.",
+  "@longMessage": {
+    "placeholders": {
+      "segments": {
+        "type": "int"
+      },
+      "per": {
+        "type": "int"
+      }
+    }
+  },
+  "summary": "Summary",
+  "@summary": {},
+  "summarySub": "Bhejne se pehle ek nazar",
+  "@summarySub": {},
+  "recipients": "Recipients",
+  "@recipients": {},
+  "perNumber": "Har number ko",
+  "@perNumber": {},
+  "segmentsValue": "{count} SMS segment",
+  "@segmentsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalSms": "Kul SMS (andazan kharcha)",
+  "@totalSms": {},
+  "packageLeftShort": "Package baqi",
+  "@packageLeftShort": {},
+  "estTime": "Andazan waqt",
+  "@estTime": {},
+  "estTimeValue": "~{duration} ({secs}s waqfa)",
+  "@estTimeValue": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "secs": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyLimitWarn": "Roz ki limit {limit} hai — aaj sirf {left} baqi. Baqi SMS limit ke baad jayenge.",
+  "@dailyLimitWarn": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "testModeOnNote": "Test mode ON — asal SMS nahi jayenge (Settings se band karein).",
+  "@testModeOnNote": {},
+  "simLabel": "SMS · SIM 1",
+  "@simLabel": {},
+  "stopTitle": "Sending rokni hai?",
+  "@stopTitle": {},
+  "stopMsg": "Baqi {count} numbers ko SMS nahi jayega. Ye dobara shuru nahi hogi — phir se bhejna padega.",
+  "@stopMsg": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopConfirm": "Haan, Stop karo",
+  "@stopConfirm": {},
+  "stoppedMsg": "{count} SMS gaye, baqi rok diye gaye",
+  "@stoppedMsg": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendingStopped": "Sending rok di gayi",
+  "@sendingStopped": {},
+  "pausedHint": "Jab chahein Resume dabayein",
+  "@pausedHint": {},
+  "sendingPaused": "Sending pause",
+  "@sendingPaused": {},
+  "connectGatewayFirst": "Pehle gateway connect karein",
+  "@connectGatewayFirst": {},
+  "resumeFailed": "Resume nahi ho saka",
+  "@resumeFailed": {},
+  "sendingResumed": "Sending dobara shuru",
+  "@sendingResumed": {},
+  "resume": "Resume",
+  "@resume": {},
+  "retryQueued": "{count} failed numbers dobara queue mein",
+  "@retryQueued": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "retrying": "Dobara bhej rahe hain",
+  "@retrying": {},
+  "queueSub": "Bhejte hue live dekhein ke kya ho raha hai",
+  "@queueSub": {},
+  "queueEmptyTitle": "Abhi koi sending nahi chal rahi",
+  "@queueEmptyTitle": {},
+  "queueEmptyMsg": "Naya SMS bhejein — yahan har number ki live halat nazar aayegi.",
+  "@queueEmptyMsg": {},
+  "stop": "Stop",
+  "@stop": {},
+  "pause": "Pause",
+  "@pause": {},
+  "startedAgo": "{audience} · shuru {ago}",
+  "@startedAgo": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "newSmsShort": "Naya SMS",
+  "@newSmsShort": {},
+  "queueStoppedTitle": "Sending ruki hui hai",
+  "@queueStoppedTitle": {},
+  "stateRunning": "Bhej rahe hain",
+  "@stateRunning": {},
+  "statePaused": "Paused",
+  "@statePaused": {},
+  "stateStopped": "Rok di gayi",
+  "@stateStopped": {},
+  "stateCompleted": "Mukammal",
+  "@stateCompleted": {},
+  "testModeFast": "Test mode · tez simulation",
+  "@testModeFast": {},
+  "nextSmsIn": "Agla SMS {secs}s mein",
+  "@nextSmsIn": {
+    "placeholders": {
+      "secs": {
+        "type": "int"
+      }
+    }
+  },
+  "doneOfTotalNumbers": "{done} / {total} numbers",
+  "@doneOfTotalNumbers": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "delayTitle": "Waqfa (delay)",
+  "@delayTitle": {},
+  "delaySub": "SIM block hone se bachne ke liye",
+  "@delaySub": {},
+  "afterEachSms": "Har SMS ke baad",
+  "@afterEachSms": {},
+  "delayBest": "Behtareen: 20–30 sec",
+  "@delayBest": {},
+  "delayLow": "Kam waqfa — SIM block ka khatra",
+  "@delayLow": {},
+  "delayHigh": "Lamba waqfa — sending sust",
+  "@delayHigh": {},
+  "liveList": "Live list",
+  "@liveList": {},
+  "liveListSub": "Jo gaya woh tick ho jata hai",
+  "@liveListSub": {},
+  "filterEmpty": "Is filter mein kuch nahi",
+  "@filterEmpty": {},
+  "moreNumbers": "…aur {count} numbers",
+  "@moreNumbers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "doneTitle": "Sending mukammal!",
+  "@doneTitle": {},
+  "doneSummary": "{total} mein {sent} gaye, {failed} failed",
+  "@doneSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "sent": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "tookTime": " · {duration} laga",
+  "@tookTime": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "viewReport": "Report dekho",
+  "@viewReport": {},
+  "retryFailedCount": "Failed dobara bhejo ({count})",
+  "@retryFailedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeWeek": "Pichle 7 din",
+  "@rangeWeek": {},
+  "rangeMonth": "Pichle 30 din",
+  "@rangeMonth": {},
+  "rangeAll": "Sab waqt",
+  "@rangeAll": {},
+  "rangeCustom": "Custom",
+  "@rangeCustom": {},
+  "pickRange": "Date range chunein",
+  "@pickRange": {},
+  "apply": "Lagao",
+  "@apply": {},
+  "exportEmpty": "Is filter mein export karne ko kuch nahi",
+  "@exportEmpty": {},
+  "emptyReport": "Khaali report",
+  "@emptyReport": {},
+  "csvHeader": "Date,Time,Name,Number,Message,Status,Failed reason,Campaign",
+  "@csvHeader": {},
+  "exportDone": "{file} ({count} rows) — Excel mein khulegi. Ab client ko bhej dein.",
+  "@exportDone": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportExported": "Report export ho gayi",
+  "@reportExported": {},
+  "exportFailed": "Export nahi ho saka. Dobara koshish karein.",
+  "@exportFailed": {},
+  "exportBtn": "Export (Excel/CSV)",
+  "@exportBtn": {},
+  "total": "Total",
+  "@total": {},
+  "reportsMobileSub": "{range} · {count} SMS",
+  "@reportsMobileSub": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "campaignDetail": "Campaign detail",
+  "@campaignDetail": {},
+  "filter": "Filter",
+  "@filter": {},
+  "reportsSub": "Purani sending ki tafseel — export karke client ko bhejein",
+  "@reportsSub": {},
+  "allShort": "All",
+  "@allShort": {},
+  "colDateTime": "DATE & TIME",
+  "@colDateTime": {},
+  "colNumber": "NUMBER",
+  "@colNumber": {},
+  "colMessage": "MESSAGE",
+  "@colMessage": {},
+  "colStatus": "STATUS",
+  "@colStatus": {},
+  "colFailReason": "FAILED KI WAJAH",
+  "@colFailReason": {},
+  "rangeOfSms": "{from}–{to} / {total} SMS",
+  "@rangeOfSms": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pageOf": "Page {page} / {pages}",
+  "@pageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEmptyTitle": "Is filter mein koi SMS nahi",
+  "@reportEmptyTitle": {},
+  "reportEmptyMsg": "Date range ya status badal kar dekhein.",
+  "@reportEmptyMsg": {},
+  "campaign": "Campaign",
+  "@campaign": {},
+  "allCampaigns": "Saari campaigns",
+  "@allCampaigns": {},
+  "filters": "Filters",
+  "@filters": {},
+  "filtersSub": "Report ko chhota karein",
+  "@filtersSub": {},
+  "dateRange": "Date range",
+  "@dateRange": {},
+  "days7": "7 din",
+  "@days7": {},
+  "days30": "30 din",
+  "@days30": {},
+  "customEllipsis": "Custom…",
+  "@customEllipsis": {},
+  "status": "Status",
+  "@status": {},
+  "customRange": "Custom range…",
+  "@customRange": {},
+  "campaignDates": "Campaign ki dates",
+  "@campaignDates": {},
+  "campaignsHeader": "CAMPAIGNS — detail ke liye click karein",
+  "@campaignsHeader": {},
+  "sentFailed": "{sent} sent · {failed} failed",
+  "@sentFailed": {
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "closeDetail": "Detail band karo",
+  "@closeDetail": {},
+  "smsPerNumber": "{count} SMS/number",
+  "@smsPerNumber": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resendFailed": "Failed dobara bhejo",
+  "@resendFailed": {},
+  "campaignTooltip": "Is campaign ki detail",
+  "@campaignTooltip": {},
+  "secPackage": "Package / Limit",
+  "@secPackage": {},
+  "secPackageSub": "Roz ki limit aur baqi SMS",
+  "@secPackageSub": {},
+  "secSending": "Sending",
+  "@secSending": {},
+  "secSendingSub": "Waqfa aur test mode",
+  "@secSendingSub": {},
+  "secAccountSub": "Password tabdeel karein",
+  "@secAccountSub": {},
+  "secDemo": "Demo data",
+  "@secDemo": {},
+  "secDemoSub": "Backend lagne tak sample data",
+  "@secDemoSub": {},
+  "settingsSub": "Panel ki bunyadi settings ek jagah",
+  "@settingsSub": {},
+  "settingsSubDesktop": "Panel ki bunyadi settings ek jagah — har section ka apna Save",
+  "@settingsSubDesktop": {},
+  "limitsSavedMsg": "Roz ki limit {limit} · package mein {left} SMS",
+  "@limitsSavedMsg": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "limitsSavedTitle": "Package / Limit save",
+  "@limitsSavedTitle": {},
+  "dailyLimit": "Roz ki SMS limit",
+  "@dailyLimit": {},
+  "dailyLimitHint": "Is se zyada aik din mein nahi jayenge",
+  "@dailyLimitHint": {},
+  "packageRemaining": "Package mein baqi SMS",
+  "@packageRemaining": {},
+  "packageHelper": "Package recharge ke baad yahan update karein (manual)",
+  "@packageHelper": {},
+  "sendingSavedTitle": "Sending settings save",
+  "@sendingSavedTitle": {},
+  "defaultDelay": "Har SMS ke baad default waqfa",
+  "@defaultDelay": {},
+  "best": "Behtareen",
+  "@best": {},
+  "recommended": "Tajweez: 20–30 sec",
+  "@recommended": {},
+  "testModeLabel": "Test mode {mode}",
+  "@testModeLabel": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "testModeOnSub": "Asal SMS nahi jayenge — sirf simulation",
+  "@testModeOnSub": {},
+  "testModeOffSub": "Asal SMS gateway se jayenge",
+  "@testModeOffSub": {},
+  "oldPasswordRequired": "Purana password likhein",
+  "@oldPasswordRequired": {},
+  "min6": "Kam az kam 6 characters",
+  "@min6": {},
+  "passwordsMismatch": "Dono naye password ek jaise nahi",
+  "@passwordsMismatch": {},
+  "oldPasswordWrong": "Purana password galat hai",
+  "@oldPasswordWrong": {},
+  "passwordNotChanged": "Password nahi badla",
+  "@passwordNotChanged": {},
+  "loginWithNew": "Agli dafa naye password se login karein",
+  "@loginWithNew": {},
+  "passwordChanged": "Password tabdeel ho gaya",
+  "@passwordChanged": {},
+  "strength0": "Bohat kamzor",
+  "@strength0": {},
+  "strength1": "Kamzor",
+  "@strength1": {},
+  "strength2": "Theek",
+  "@strength2": {},
+  "strength3": "Mazboot",
+  "@strength3": {},
+  "strength4": "Bohat mazboot",
+  "@strength4": {},
+  "hide": "Chhupao",
+  "@hide": {},
+  "show": "Dikhao",
+  "@show": {},
+  "usernameLine": "Username: admin · Administrator",
+  "@usernameLine": {},
+  "oldPassword": "Purana password",
+  "@oldPassword": {},
+  "newPassword": "Naya password",
+  "@newPassword": {},
+  "newPasswordAgain": "Naya password dobara",
+  "@newPasswordAgain": {},
+  "changePassword": "Password badlo",
+  "@changePassword": {},
+  "demoInfo": "Abhi panel sample data par chal raha hai. Phase 3 mein asal database (backend) lagega.",
+  "@demoInfo": {},
+  "demoCounts": "{numbers} numbers · {groups} groups · {campaigns} campaigns",
+  "@demoCounts": {
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      },
+      "groups": {
+        "type": "String"
+      },
+      "campaigns": {
+        "type": "String"
+      }
+    }
+  },
+  "loadSample": "Sample data load karo",
+  "@loadSample": {},
+  "sampleLoadedMsg": "Sample numbers, groups aur campaigns wapas aa gaye",
+  "@sampleLoadedMsg": {},
+  "sampleData": "Sample data",
+  "@sampleData": {},
+  "clearAll": "Sab saaf karo",
+  "@clearAll": {},
+  "clearAllTitle": "Sara data saaf karna hai?",
+  "@clearAllTitle": {},
+  "clearAllMsg": "Saare numbers, groups aur reports hat jayenge (khaali screens dekhne ke liye). Sample data dobara load kar sakte hain.",
+  "@clearAllMsg": {},
+  "clearAllConfirm": "Haan, saaf karo",
+  "@clearAllConfirm": {},
+  "clearedMsg": "Panel ab khaali hai — empty states dekh sakte hain",
+  "@clearedMsg": {},
+  "dataCleared": "Data saaf",
+  "@dataCleared": {},
+  "versionLine": "Version {version} · Browser + Mobile",
+  "@versionLine": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "gwConnectedMsg": "Phone online hai — SMS bhej sakte hain",
+  "@gwConnectedMsg": {},
+  "gwConnectedTitle": "Gateway connect ho gaya",
+  "@gwConnectedTitle": {},
+  "gwDisconnectTitle": "Gateway disconnect karna hai?",
+  "@gwDisconnectTitle": {},
+  "gwDisconnectMsg": "Phone se rabta khatam ho jayega aur chalti queue ruk jayegi. Dobara connect karne ke liye pairing karni hogi.",
+  "@gwDisconnectMsg": {},
+  "gwDisconnectConfirm": "Haan, disconnect",
+  "@gwDisconnectConfirm": {},
+  "gwQueueStopsUntil": "Queue ruk jayegi jab tak dobara connect na ho",
+  "@gwQueueStopsUntil": {},
+  "gwDisconnected": "Gateway disconnect",
+  "@gwDisconnected": {},
+  "important": "Zaroori",
+  "@important": {},
+  "keepPhoneOn": "Phone on, charged aur internet par rakho — warna queue ruk jayegi.",
+  "@keepPhoneOn": {},
+  "gwSubMobile": "Jis phone/SIM se SMS jata hai",
+  "@gwSubMobile": {},
+  "gwSubDesktop": "Jis Android phone aur SIM se asal SMS jata hai, us ki halat",
+  "@gwSubDesktop": {},
+  "connecting": "Connect ho raha hai…",
+  "@connecting": {},
+  "noPhoneConnection": "Phone se rabta nahi",
+  "@noPhoneConnection": {},
+  "sim": "SIM",
+  "@sim": {},
+  "signal": "Signal",
+  "@signal": {},
+  "battery": "Battery",
+  "@battery": {},
+  "charging": " · charging",
+  "@charging": {},
+  "lastSeen": "Last seen",
+  "@lastSeen": {},
+  "disconnect": "Disconnect",
+  "@disconnect": {},
+  "reconnect": "Dobara connect karo",
+  "@reconnect": {},
+  "guide1": "Phone on karein aur charger lagayein",
+  "@guide1": {},
+  "guide2": "Internet (WiFi ya mobile data) on karein",
+  "@guide2": {},
+  "guide3": "Phone par \"{app} Gateway\" app kholein",
+  "@guide3": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "guide4": "Pairing QR scan karein ya code daalein",
+  "@guide4": {},
+  "guide5": "Green \"Connected\" ka intezar karein",
+  "@guide5": {},
+  "guideTitle": "Dobara connect kaise karein?",
+  "@guideTitle": {},
+  "guideSub": "In steps par amal karein",
+  "@guideSub": {},
+  "pairing": "Pairing",
+  "@pairing": {},
+  "pairingSub": "Android gateway app mein ye QR scan karein ya code daalein",
+  "@pairingSub": {},
+  "orEnterCode": "Ya ye code likhein",
+  "@orEnterCode": {},
+  "codeCopied": "Pairing code copy ho gaya",
+  "@codeCopied": {},
+  "newCode": "Naya code banao",
+  "@newCode": {},
+  "oldCodeInvalid": "Purana code ab kaam nahi karega",
+  "@oldCodeInvalid": {},
+  "newPairingCode": "Naya pairing code",
+  "@newPairingCode": {},
+  "checkNumber": "Number check karein",
+  "@checkNumber": {},
+  "testSent": "Test SMS {phone} par bheja — phone check karein",
+  "@testSent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "testSentTitle": "Test SMS gaya",
+  "@testSentTitle": {},
+  "testFailedMsg": "Gateway connected nahi — test nahi ja saka",
+  "@testFailedMsg": {},
+  "testFailed": "Test fail",
+  "@testFailed": {},
+  "yourNumber": "Apna number",
+  "@yourNumber": {},
+  "sendingNow": "Bhej rahe hain…",
+  "@sendingNow": {},
+  "sendTestSms": "Test SMS bhejo",
+  "@sendTestSms": {},
+  "testSms": "Test SMS",
+  "@testSms": {},
+  "testSmsSub": "Apne number par 1 test SMS bhej kar check karein",
+  "@testSmsSub": {},
+  "loginNetwork": "Server se rabta nahi ho saka — internet check karke dobara koshish karein.",
+  "@loginNetwork": {},
+  "syncFailed": "Server par save nahi hua — internet check karein",
+  "@syncFailed": {},
+  "modeLive": "Live · Supabase",
+  "@modeLive": {},
+  "modeDemo": "Demo mode",
+  "@modeDemo": {}
+}

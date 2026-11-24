@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Paigham SMS Panel — numbers ka database, groups, live SMS sending aur reports. Browser aur mobile dono par.">
+  <meta name="theme-color" content="#1D4ED8">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Paigham">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Paigham · SMS Panel</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #172554; }
+    #boot {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 22px;
+      background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 45%, #172554 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      transition: opacity .45s ease;
+      z-index: 9999;
+    }
+    #boot.hide { opacity: 0; pointer-events: none; }
+    #boot .logo {
+      width: 96px; height: 96px; border-radius: 29px; background: #fff;
+      display: grid; place-items: center;
+      box-shadow: 0 18px 50px rgba(0,0,0,.28);
+      animation: boot-pop 1.6s ease-in-out infinite;
+    }
+    #boot .name { color: #fff; font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+    #boot .bar { width: 160px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.18); overflow: hidden; }
+    #boot .bar i { display: block; width: 40%; height: 100%; border-radius: 4px; background: #fff; animation: boot-slide 1.1s ease-in-out infinite; }
+    @keyframes boot-pop { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    @keyframes boot-slide { 0% { transform: translateX(-110%); } 100% { transform: translateX(260%); } }
+    @media (prefers-reduced-motion: reduce) { #boot .logo, #boot .bar i { animation: none; } }
+  </style>
+</head>
+<body>
+  <div id="boot" aria-label="Paigham load ho raha hai">
+    <div class="logo">
+      <svg width="62" height="62" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M36 24h28a16 16 0 0 1 16 16v12a16 16 0 0 1-16 16H44L25 80l5-14a16 16 0 0 1-10-14V40a16 16 0 0 1 16-16z" fill="#1D4ED8"/>
+        <circle cx="36" cy="46" r="5" fill="#fff"/><circle cx="50" cy="46" r="5" fill="#fff"/><circle cx="64" cy="46" r="5" fill="#fff"/>
+      </svg>
+    </div>
+    <div class="name">Paigham</div>
+    <div class="bar"><i></i></div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var b = document.getElementById('boot');
+      if (!b) return;
+      b.classList.add('hide');
+      setTimeout(function () { b.remove(); }, 500);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
