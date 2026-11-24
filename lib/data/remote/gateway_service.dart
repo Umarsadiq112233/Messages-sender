@@ -80,6 +80,10 @@ class GatewayService {
       await _heartbeat(true);
       final settings = await _repo.settings();
       final delaySeconds = (settings?['delay_seconds'] as num?)?.toInt() ?? 20;
+      // The chosen sending SIM, re-read every tick so a Settings change
+      // takes effect on the next message without restarting the gateway.
+      // Tolerant default: an un-migrated row has no sim_slot key.
+      final simSlot = (settings?['sim_slot'] as num?)?.toInt() ?? -1;
       final campaigns = await _repo.runningCampaigns();
       var firstSend = true;
       for (final c in campaigns) {
@@ -92,11 +96,18 @@ class GatewayService {
             if (!_running) return;
           }
           firstSend = false;
+          // Keep last_seen fresh while a long campaign sends (the tick
+          // can run for many minutes with the per-message delay).
+          try {
+            await _heartbeat(true);
+          } catch (_) {
+            // Best-effort — a failed heartbeat must not stop the send.
+          }
           await _repo.markLogSending(log.id);
-          final ok = await _channel.send(log.phone, c.message);
+          final res = await _channel.sendResult(log.phone, c.message, simSlot: simSlot);
           log
-            ..status = ok ? DeliveryStatus.sent : DeliveryStatus.failed
-            ..reason = ok ? null : FailReason.networkBusy
+            ..status = res.ok ? DeliveryStatus.sent : DeliveryStatus.failed
+            ..reason = res.failReason
             ..time = DateTime.now();
           await _repo.updateLog(log);
         }
