@@ -379,6 +379,39 @@
   "@failTimeout": {},
   "failLowBalance": "SIM balance kam",
   "@failLowBalance": {},
+  "failLowBalanceHint": "Balance kam hai — apni SIM ka package/balance check karein",
+  "@failLowBalanceHint": {},
+  "failNoPermission": "SMS permission allowed nahi — Android settings mein is app ko SMS ki ijazat dein",
+  "@failNoPermission": {},
+  "failNoSim": "Muntakhab SIM nahi mili — Settings mein Sending SIM check karein",
+  "@failNoSim": {},
+  "sendingSim": "Bhejne wali SIM",
+  "@sendingSim": {},
+  "simPhoneDefault": "Phone default",
+  "@simPhoneDefault": {},
+  "simSlot": "SIM {slot}",
+  "@simSlot": {
+    "placeholders": {
+      "slot": {
+        "type": "int"
+      }
+    }
+  },
+  "simSlotCarrier": "SIM {slot} · {carrier}",
+  "@simSlotCarrier": {
+    "placeholders": {
+      "slot": {
+        "type": "int"
+      },
+      "carrier": {
+        "type": "String"
+      }
+    }
+  },
+  "simChoiceCaption": "SIM ka intekhab Android gateway phone par nazar ayega",
+  "@simChoiceCaption": {},
+  "loadSims": "SIMs load karein",
+  "@loadSims": {},
   "failNotExist": "Number mojood nahi",
   "@failNotExist": {},
   "failStopped": "Rok diya gaya (Stop)",
