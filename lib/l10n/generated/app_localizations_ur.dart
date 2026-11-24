@@ -1465,6 +1465,17 @@ class AppLocalizationsUr extends AppLocalizations {
   String get willGoToSuffix => ' نمبروں کو جائے گا';
 
   @override
+  String willGoToSuffixFor(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ' نمبروں کو جائے گا',
+      one: ' نمبر کو جائے گا',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get message => 'پیغام';
 
   @override
@@ -3626,6 +3637,17 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
 
   @override
   String get willGoToSuffix => ' numbers ko jayega';
+
+  @override
+  String willGoToSuffixFor(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ' numbers ko jayega',
+      one: ' number ko jayega',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get message => 'Message';
