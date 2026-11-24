@@ -802,6 +802,13 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
         ..lastSeen = DateTime.now();
       if (service.deviceName != null) gateway.deviceName = service.deviceName!;
       if (service.deviceModel != null) gateway.model = service.deviceModel!;
+      // The service's first heartbeat already read the real battery.
+      final level = service.batteryLevel;
+      if (level != null) {
+        gateway
+          ..battery = level
+          ..charging = service.batteryCharging;
+      }
       _log(ActivityEvent.gatewayConnected, [gateway.deviceName]);
       notifyListeners();
       return true;
