@@ -82,9 +82,14 @@ create table if not exists public.app_settings (
   package_remaining int  not null default 0 check (package_remaining >= 0),
   delay_seconds     int  not null default 20 check (delay_seconds between 5 and 120),
   test_mode         boolean not null default true,
+  sim_slot          int  not null default -1,
   updated_at        timestamptz not null default now()
 );
 insert into public.app_settings (id) values (1) on conflict (id) do nothing;
+
+-- Migration for existing databases (safe to re-run): the gateway phone's
+-- chosen sending SIM slot (0 = SIM 1, 1 = SIM 2, -1 = phone default).
+alter table public.app_settings add column if not exists sim_slot int not null default -1;
 
 -- ─────────────────────────── Gateway device (single row, id = 1) ───────────────────────────
 -- The Android gateway app (Phase 3) will update this row; the panel shows it.
