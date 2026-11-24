@@ -216,7 +216,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get language => 'زبان';
 
   @override
-  String get languageSub => 'پینل کس زبان میں دکھے';
+  String get languageSub => 'پینل کس زبان میں دکھے، وہ منتخب کریں';
 
   @override
   String get languageChanged => 'زبان بدل دی گئی';
@@ -439,7 +439,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get simChoiceCaption => 'سم کا انتخاب Android گیٹ وے فون پر نظر آئے گا';
+  String get simChoiceCaption => 'منتخب کریں کہ پیغامات کس سم سے جائیں گے۔ یہ Android گیٹ وے فون پر لاگو ہوتا ہے۔';
 
   @override
   String get loadSims => 'سمیں لوڈ کریں';
@@ -710,6 +710,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sentToday => 'آج بھیجے';
+
 
   @override
   String get leftToday => 'آج باقی';
@@ -1840,32 +1841,32 @@ class AppLocalizationsUr extends AppLocalizations {
   String get campaignTooltip => 'اس کیمپین کی تفصیل';
 
   @override
-  String get secPackage => 'پیکج / حد';
+  String get secPackage => 'ایس ایم ایس پیکج اور روزانہ حد';
 
   @override
-  String get secPackageSub => 'روزانہ حد اور باقی ایس ایم ایس';
+  String get secPackageSub => 'سم پیکج میں باقی ایس ایم ایس اور روزانہ بھیجنے کی حد';
 
   @override
   String get secSending => 'سینڈنگ';
 
   @override
-  String get secSendingSub => 'وقفہ اور ٹیسٹ موڈ';
+  String get secSendingSub => 'پیغامات کا وقفہ، ٹیسٹ موڈ اور بھیجنے والی سم';
 
   @override
-  String get secAccountSub => 'پاس ورڈ تبدیل کریں';
+  String get secAccountSub => 'آپ کی پروفائل اور پاس ورڈ';
 
   @override
   String get secDemo => 'ڈیمو ڈیٹا';
 
   @override
-  String get secDemoSub => 'بیک اینڈ لگنے تک نمونہ ڈیٹا';
+  String get secDemoSub => 'پینل آزمانے کے لیے نمونہ ڈیٹا لوڈ یا صاف کریں';
 
   @override
-  String get settingsSub => 'پینل کی بنیادی سیٹنگز ایک جگہ';
+  String get settingsSub => 'زبان، ایس ایم ایس پیکج، سینڈنگ اور اکاؤنٹ کی سیٹنگز';
 
   @override
   String get settingsSubDesktop =>
-      'پینل کی بنیادی سیٹنگز ایک جگہ — ہر حصے کا اپنا محفوظ بٹن';
+      'زبان، ایس ایم ایس پیکج، سینڈنگ اور اکاؤنٹ کی سیٹنگز — ہر حصہ الگ محفوظ ہوتا ہے';
 
   @override
   String limitsSavedMsg(int limit, int left) {
@@ -1873,25 +1874,25 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get limitsSavedTitle => 'پیکج / حد محفوظ';
+  String get limitsSavedTitle => 'پیکج اور حد محفوظ ہو گئی';
 
   @override
   String get dailyLimit => 'روزانہ ایس ایم ایس حد';
 
   @override
-  String get dailyLimitHint => 'ایک دن میں اس سے زیادہ نہیں جائیں گے';
+  String get dailyLimitHint => 'ایپ ایک دن میں اس سے زیادہ ایس ایم ایس نہیں بھیجے گی۔ اس سے آپ کا سم پیکج اور بیلنس محفوظ رہتا ہے۔';
 
   @override
   String get packageRemaining => 'پیکج میں باقی ایس ایم ایس';
 
   @override
-  String get packageHelper => 'پیکج ری چارج کے بعد یہاں اپ ڈیٹ کریں (دستی)';
+  String get packageHelper => 'آپ کے سم پیکج میں کتنے ایس ایم ایس باقی ہیں۔ جب بھی پیکج ری چارج یا تجدید کریں، یہاں اپ ڈیٹ کر دیں۔';
 
   @override
   String get sendingSavedTitle => 'سینڈنگ سیٹنگز محفوظ';
 
   @override
-  String get defaultDelay => 'ہر ایس ایم ایس کے بعد طے شدہ وقفہ';
+  String get defaultDelay => 'پیغامات کے درمیان وقفہ';
 
   @override
   String get best => 'بہترین';
@@ -1905,10 +1906,10 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get testModeOnSub => 'اصل ایس ایم ایس نہیں جائیں گے — صرف نقل';
+  String get testModeOnSub => 'آن — پیغامات صرف نقل ہوں گے، اصل ایس ایم ایس نہیں جائے گا';
 
   @override
-  String get testModeOffSub => 'اصل ایس ایم ایس گیٹ وے سے جائیں گے';
+  String get testModeOffSub => 'آف — اصل ایس ایم ایس گیٹ وے فون کی سم سے جائیں گے';
 
   @override
   String get oldPasswordRequired => 'پرانا پاس ورڈ لکھیں';
@@ -2374,7 +2375,7 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get language => 'Zaban / Language';
 
   @override
-  String get languageSub => 'Panel kis zaban mein dikhe';
+  String get languageSub => 'Panel kis zaban mein dikhe, woh chunein';
 
   @override
   String get languageChanged => 'Zaban badal di gayi';
@@ -2598,7 +2599,7 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   }
 
   @override
-  String get simChoiceCaption => 'SIM ka intekhab Android gateway phone par nazar ayega';
+  String get simChoiceCaption => 'Chunein ke messages kis SIM se jayenge. Ye Android gateway phone par apply hota hai.';
 
   @override
   String get loadSims => 'SIMs load karein';
@@ -2870,6 +2871,7 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
 
   @override
   String get sentToday => 'Aaj bheje';
+
 
   @override
   String get leftToday => 'Aaj baqi';
@@ -4002,32 +4004,32 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get campaignTooltip => 'Is campaign ki detail';
 
   @override
-  String get secPackage => 'Package / Limit';
+  String get secPackage => 'SMS Package aur Roz ki Limit';
 
   @override
-  String get secPackageSub => 'Roz ki limit aur baqi SMS';
+  String get secPackageSub => 'SIM package mein baqi SMS aur roz ki sending limit';
 
   @override
   String get secSending => 'Sending';
 
   @override
-  String get secSendingSub => 'Waqfa aur test mode';
+  String get secSendingSub => 'Message ka waqfa, test mode aur bhejne wali SIM';
 
   @override
-  String get secAccountSub => 'Password tabdeel karein';
+  String get secAccountSub => 'Aap ki profile aur password';
 
   @override
   String get secDemo => 'Demo data';
 
   @override
-  String get secDemoSub => 'Backend lagne tak sample data';
+  String get secDemoSub => 'Panel try karne ke liye sample data load ya clear karein';
 
   @override
-  String get settingsSub => 'Panel ki bunyadi settings ek jagah';
+  String get settingsSub => 'Zaban, SMS package, sending aur account ki settings';
 
   @override
   String get settingsSubDesktop =>
-      'Panel ki bunyadi settings ek jagah — har section ka apna Save';
+      'Zaban, SMS package, sending aur account ki settings — har section alag save hota hai';
 
   @override
   String limitsSavedMsg(int limit, int left) {
@@ -4035,26 +4037,26 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   }
 
   @override
-  String get limitsSavedTitle => 'Package / Limit save';
+  String get limitsSavedTitle => 'Package aur limit save ho gayi';
 
   @override
-  String get dailyLimit => 'Roz ki SMS limit';
+  String get dailyLimit => 'Roz ki SMS Limit';
 
   @override
-  String get dailyLimitHint => 'Is se zyada aik din mein nahi jayenge';
+  String get dailyLimitHint => 'App aik din mein is se zyada SMS nahi bhejegi. Is se aap ka SIM package aur balance mehfooz rehta hai.';
 
   @override
-  String get packageRemaining => 'Package mein baqi SMS';
+  String get packageRemaining => 'Package mein Baqi SMS';
 
   @override
   String get packageHelper =>
-      'Package recharge ke baad yahan update karein (manual)';
+      'Aap ke SIM package mein kitne SMS baqi hain. Jab bhi package recharge ya renew karein, yahan update kar dein.';
 
   @override
   String get sendingSavedTitle => 'Sending settings save';
 
   @override
-  String get defaultDelay => 'Har SMS ke baad default waqfa';
+  String get defaultDelay => 'Messages ke darmiyan waqfa';
 
   @override
   String get best => 'Behtareen';
@@ -4068,10 +4070,10 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   }
 
   @override
-  String get testModeOnSub => 'Asal SMS nahi jayenge — sirf simulation';
+  String get testModeOnSub => 'On — messages sirf simulate honge, asal SMS nahi jayega';
 
   @override
-  String get testModeOffSub => 'Asal SMS gateway se jayenge';
+  String get testModeOffSub => 'Off — asal SMS gateway phone ki SIM se jayenge';
 
   @override
   String get oldPasswordRequired => 'Purana password likhein';
