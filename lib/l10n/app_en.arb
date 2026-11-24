@@ -424,6 +424,7 @@
   "noneSelectedMsg": "Select numbers with the checkboxes in the database, then come back here.",
   "openDatabase": "Open database",
   "willGoToSuffix": " numbers will receive it",
+  "willGoToSuffixFor": "{count, plural, =1{ number will receive it} other{ numbers will receive it}}",
   "message": "Message",
   "smsRule": "English: 160 = 1 SMS · Urdu: 70 = 1 SMS",
   "templates": "Templates",
