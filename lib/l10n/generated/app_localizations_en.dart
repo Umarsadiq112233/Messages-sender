@@ -425,6 +425,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failLowBalance => 'Low SIM balance';
 
   @override
+  String get failLowBalanceHint =>
+      'Low balance — check your SIM package/balance';
+
+  @override
+  String get failNoPermission =>
+      'SMS permission not allowed — allow SMS for this app in Android settings';
+
+  @override
+  String get failNoSim => 'Chosen SIM not found — check the Sending SIM in Settings';
+
+  @override
+  String get sendingSim => 'Sending SIM';
+
+  @override
+  String get simPhoneDefault => 'Phone default';
+
+  @override
+  String simSlot(int slot) {
+    return 'SIM $slot';
+  }
+
+  @override
+  String simSlotCarrier(int slot, String carrier) {
+    return 'SIM $slot · $carrier';
+  }
+
+  @override
+  String get simChoiceCaption => 'SIM choice appears on the Android gateway phone';
+
+  @override
+  String get loadSims => 'Load SIMs';
+
+  @override
   String get failNotExist => 'Number doesn\'t exist';
 
   @override
