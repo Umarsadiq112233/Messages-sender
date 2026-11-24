@@ -831,6 +831,60 @@ abstract class AppLocalizations {
   /// **'SIM balance kam'**
   String get failLowBalance;
 
+  /// No description provided for @failLowBalanceHint.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Balance kam hai — apni SIM ka package/balance check karein'**
+  String get failLowBalanceHint;
+
+  /// No description provided for @failNoPermission.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'SMS permission allowed nahi — Android settings mein is app ko SMS ki ijazat dein'**
+  String get failNoPermission;
+
+  /// No description provided for @failNoSim.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Muntakhab SIM nahi mili — Settings mein Sending SIM check karein'**
+  String get failNoSim;
+
+  /// No description provided for @sendingSim.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Bhejne wali SIM'**
+  String get sendingSim;
+
+  /// No description provided for @simPhoneDefault.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Phone default'**
+  String get simPhoneDefault;
+
+  /// No description provided for @simSlot.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'SIM {slot}'**
+  String simSlot(int slot);
+
+  /// No description provided for @simSlotCarrier.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'SIM {slot} · {carrier}'**
+  String simSlotCarrier(int slot, String carrier);
+
+  /// No description provided for @simChoiceCaption.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'SIM ka intekhab Android gateway phone par nazar ayega'**
+  String get simChoiceCaption;
+
+  /// No description provided for @loadSims.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'SIMs load karein'**
+  String get loadSims;
+
   /// No description provided for @failNotExist.
   ///
   /// In ur_Latn, this message translates to:
