@@ -19,7 +19,7 @@ class GatewayService {
   final SupabaseRepo _repo;
   final SmsChannel _channel = const SmsChannel();
 
-  static const _pollInterval = Duration(seconds: 5);
+  static const _pollInterval = Duration(seconds: 2);
 
   Timer? _timer;
   bool _running = false;
@@ -99,7 +99,9 @@ class GatewayService {
     try {
       await _heartbeat(true);
       final settings = await _repo.settings();
-      final delaySeconds = (settings?['delay_seconds'] as num?)?.toInt() ?? 20;
+      // Clamp into the fast range: rows saved before the fast-sending
+      // change can still hold the retired slow default (20s).
+      final delaySeconds = ((settings?['delay_seconds'] as num?)?.toInt() ?? 2).clamp(1, 5);
       // The chosen sending SIM, re-read every tick so a Settings change
       // takes effect on the next message without restarting the gateway.
       // Tolerant default: an un-migrated row has no sim_slot key.
