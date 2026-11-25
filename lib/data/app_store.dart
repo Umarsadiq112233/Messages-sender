@@ -239,6 +239,22 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  /// Manual reload behind pull-to-refresh: re-runs the exact same
+  /// full load used at login ([_loadRemote]) so every screen shows
+  /// fresh database state. The returned future completes only when
+  /// the load has finished (or failed — failures already surface via
+  /// [onSyncError]'s toast inside [_loadRemote]). Demo mode has
+  /// nothing remote to fetch, so it just settles briefly and
+  /// re-notifies, which still gives the indicator honest work.
+  Future<void> refresh() async {
+    if (!isLive) {
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      notifyListeners();
+      return;
+    }
+    await _loadRemote();
+  }
+
   void _subscribeRealtime() {
     _channel?.unsubscribe();
     final client = Supabase.instance.client;
