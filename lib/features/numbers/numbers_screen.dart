@@ -147,6 +147,7 @@ class _NumbersScreenState extends State<NumbersScreen> {
     final showDate = context.isDesktop;
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         PageHeader(
           title: context.l10n.navDatabase,
@@ -402,8 +403,12 @@ class _NumbersScreenState extends State<NumbersScreen> {
               ),
             ).animate().fadeIn(duration: 300.ms).slideY(begin: -.2, end: 0, curve: Motion.emphasized),
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(16, 6, 16, selected.isEmpty ? 96 : 120),
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: store.refresh,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(16, 6, 16, selected.isEmpty ? 96 : 120),
                 children: [
                   Row(
                     children: [
@@ -453,6 +458,7 @@ class _NumbersScreenState extends State<NumbersScreen> {
                       ),
                     ),
                 ],
+                ),
               ),
             ),
           ],
