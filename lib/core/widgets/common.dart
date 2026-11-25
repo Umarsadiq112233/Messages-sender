@@ -405,22 +405,32 @@ class FilterChipX extends StatelessWidget {
 }
 
 /// Padded scrollable page body used by every screen.
+///
+/// When [onRefresh] is given, the body is wrapped in a
+/// [RefreshIndicator] (pull-to-refresh) and the scroll view is made
+/// always-scrollable so the gesture works even when the content is
+/// shorter than the viewport. Without it the body is exactly as
+/// before — no visual change for screens that don't opt in.
 class PageScroll extends StatelessWidget {
-  const PageScroll({super.key, required this.children, this.controller, this.bottomPadding});
+  const PageScroll({super.key, required this.children, this.controller, this.bottomPadding, this.onRefresh});
 
   final List<Widget> children;
   final ScrollController? controller;
   final double? bottomPadding;
+  final Future<void> Function()? onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final g = context.gutter;
-    return SingleChildScrollView(
+    final scroll = SingleChildScrollView(
       controller: controller,
+      physics: onRefresh == null ? null : const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.fromLTRB(g, context.isMobile ? 18 : 28, g, bottomPadding ?? (context.isMobile ? 28 : 40)),
       child: ContentWidth(
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
       ),
     );
+    if (onRefresh == null) return scroll;
+    return RefreshIndicator(color: AppColors.primary, onRefresh: onRefresh!, child: scroll);
   }
 }
