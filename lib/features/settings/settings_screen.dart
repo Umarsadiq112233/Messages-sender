@@ -369,16 +369,16 @@ class _SendingSectionState extends State<_SendingSection> {
           children: [
             NumberStepper(
               value: _delay,
-              min: 5,
-              max: 120,
-              step: 5,
+              min: 1,
+              max: 5,
+              step: 1,
               suffix: context.l10n.sec,
               onChanged: (v) => setState(() => _delay = v),
             ),
             Pill(
-              label: _delay >= 20 && _delay <= 30 ? context.l10n.best : context.l10n.recommended,
-              color: _delay >= 20 && _delay <= 30 ? AppColors.success : AppColors.warningDark,
-              icon: _delay >= 20 && _delay <= 30 ? Icons.verified_rounded : Icons.info_outline_rounded,
+              label: _delay >= 2 && _delay <= 3 ? context.l10n.best : context.l10n.recommended,
+              color: _delay >= 2 && _delay <= 3 ? AppColors.success : AppColors.warningDark,
+              icon: _delay >= 2 && _delay <= 3 ? Icons.verified_rounded : Icons.info_outline_rounded,
             ),
           ],
         ),
