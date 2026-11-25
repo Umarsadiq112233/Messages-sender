@@ -53,6 +53,7 @@ class GroupsScreen extends StatelessWidget {
     );
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         PageHeader(
           title: context.l10n.navGroups,
