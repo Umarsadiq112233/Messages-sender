@@ -181,7 +181,7 @@ class AppSettings {
   AppSettings({
     this.dailyLimit = 100,
     this.packageRemaining = 2450,
-    this.delaySeconds = 20,
+    this.delaySeconds = 2,
     this.testMode = true,
     this.simSlot = -1,
   });
