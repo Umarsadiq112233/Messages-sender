@@ -30,7 +30,7 @@ class MainActivity : FlutterActivity() {
         const val CHANNEL = "paigham/sms"
         const val SMS_PERMISSION_REQUEST = 4101
         const val PHONE_STATE_PERMISSION_REQUEST = 4102
-        const val SEND_TIMEOUT_MS = 45_000L
+        const val SEND_TIMEOUT_MS = 20_000L
     }
 
     private var pendingPermissionResult: MethodChannel.Result? = null
