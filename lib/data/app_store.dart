@@ -686,7 +686,7 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setDelay(int seconds) {
-    settings.delaySeconds = seconds.clamp(5, 120);
+    settings.delaySeconds = seconds.clamp(1, 5);
     _push((r) => r.saveSettings(settings));
     notifyListeners();
   }
