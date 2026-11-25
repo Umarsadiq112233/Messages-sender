@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../core/layout/responsive.dart';
 import '../../core/motion/motion.dart';
@@ -65,7 +63,6 @@ class _GatewayScreenState extends State<GatewayScreen> {
 
     final status = _StatusCard(gateway: g, connecting: _connecting, onConnect: _connect, onDisconnect: _disconnect);
     final guide = _GuideCard(gateway: g);
-    final pairing = _PairingCard(gateway: g, onRegenerate: store.regeneratePairCode);
     const test = _TestCard();
     final note = InfoBanner(
       tone: BannerTone.warning,
@@ -83,11 +80,9 @@ class _GatewayScreenState extends State<GatewayScreen> {
           status.enter(context, index: 1),
           const SizedBox(height: 14),
           if (!g.connected) ...[guide.enter(context, index: 2), const SizedBox(height: 14)],
-          pairing.enter(context, index: 3),
+          test.enter(context, index: 3),
           const SizedBox(height: 14),
-          test.enter(context, index: 4),
-          const SizedBox(height: 14),
-          note.enter(context, index: 5),
+          note.enter(context, index: 4),
         ],
       );
     }
@@ -112,7 +107,7 @@ class _GatewayScreenState extends State<GatewayScreen> {
           ),
           end: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [pairing.enter(context, index: 2), const SizedBox(height: 22), note.enter(context, index: 4)],
+            children: [note.enter(context, index: 3)],
           ),
         ),
       ],
@@ -467,7 +462,6 @@ class _GuideCard extends StatelessWidget {
       (context.l10n.guide1, Icons.power_settings_new_rounded),
       (context.l10n.guide2, Icons.wifi_rounded),
       (context.l10n.guide3(AppInfo.name), Icons.apps_rounded),
-      (context.l10n.guide4, Icons.qr_code_scanner_rounded),
       (context.l10n.guide5, Icons.check_circle_outline_rounded),
     ];
     return SectionCard(
@@ -500,103 +494,6 @@ class _GuideCard extends StatelessWidget {
                 ],
               ),
             ).enterItem(context, i),
-        ],
-      ),
-    );
-  }
-}
-
-class _PairingCard extends StatelessWidget {
-  const _PairingCard({required this.gateway, required this.onRegenerate});
-  final GatewayInfo gateway;
-  final VoidCallback onRegenerate;
-
-  @override
-  Widget build(BuildContext context) {
-    final code = gateway.pairCode;
-    return SectionCard(
-      title: context.l10n.pairing,
-      subtitle: context.l10n.pairingSub,
-      icon: Icons.qr_code_2_rounded,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.border),
-              boxShadow: AppShadows.card,
-            ),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 450),
-              transitionBuilder: (c, a) => ScaleTransition(
-                scale: CurvedAnimation(parent: a, curve: Curves.easeOutBack),
-                child: FadeTransition(opacity: a, child: c),
-              ),
-              child: QrImageView(
-                key: ValueKey(code),
-                data: 'paigham://pair?code=$code',
-                size: 176,
-                padding: EdgeInsets.zero,
-                eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.circle, color: AppColors.primaryDark),
-                dataModuleStyle: const QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.circle,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Text(context.l10n.orEnterCode, style: AppText.caption),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 350),
-                    transitionBuilder: (c, a) => SlideTransition(
-                      position: Tween(begin: const Offset(0, .5), end: Offset.zero).animate(a),
-                      child: FadeTransition(opacity: a, child: c),
-                    ),
-                    child: Text(
-                      code,
-                      key: ValueKey(code),
-                      style: AppText.mono.copyWith(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 4,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              IconButton(
-                tooltip: context.l10n.copy,
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: code));
-                  AppToast.info(context.l10n.codeCopied, title: context.l10n.copy);
-                },
-                icon: const Icon(Icons.copy_rounded, color: AppColors.textMuted),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          AppButton(
-            label: context.l10n.newCode,
-            icon: Icons.autorenew_rounded,
-            variant: AppButtonVariant.soft,
-            expand: context.isMobile,
-            onPressed: () {
-              onRegenerate();
-              AppToast.info(context.l10n.oldCodeInvalid, title: context.l10n.newPairingCode);
-            },
-          ),
         ],
       ),
     );
