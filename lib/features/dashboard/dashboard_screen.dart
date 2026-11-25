@@ -45,6 +45,7 @@ class DashboardScreen extends StatelessWidget {
     // 1024–1279 uses the roomier two-column tablet arrangement.
     if (screen == ScreenSize.desktop && MediaQuery.sizeOf(context).width >= 1280) {
       return PageScroll(
+        onRefresh: store.refresh,
         children: [
           header,
           const SizedBox(height: 26),
@@ -85,6 +86,7 @@ class DashboardScreen extends StatelessWidget {
     }
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         header,
         const SizedBox(height: 20),
