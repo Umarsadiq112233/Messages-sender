@@ -234,6 +234,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (context.isMobile) {
       final shown = rows.take(_visible).toList();
       return PageScroll(
+        onRefresh: store.refresh,
         children: [
           PageHeader(
             title: context.l10n.navReports,
@@ -289,6 +290,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final slice = rows.skip(page * _pageSize).take(_pageSize).toList();
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         PageHeader(title: context.l10n.navReports, subtitle: context.l10n.reportsSub, actions: [exportBtn]),
         const SizedBox(height: 22),
