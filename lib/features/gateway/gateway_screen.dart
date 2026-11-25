@@ -76,6 +76,7 @@ class _GatewayScreenState extends State<GatewayScreen> {
 
     if (mobile) {
       return PageScroll(
+        onRefresh: store.refresh,
         children: [
           PageHeader(title: context.l10n.gatewayDevice, subtitle: context.l10n.gwSubMobile),
           const SizedBox(height: 16),
@@ -92,6 +93,7 @@ class _GatewayScreenState extends State<GatewayScreen> {
     }
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         PageHeader(title: context.l10n.gatewayDevice, subtitle: context.l10n.gwSubDesktop),
         const SizedBox(height: 24),
