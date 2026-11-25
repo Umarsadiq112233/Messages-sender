@@ -96,6 +96,7 @@ class _QueueScreenState extends State<QueueScreen> {
 
     if (c == null) {
       return PageScroll(
+        onRefresh: store.refresh,
         children: [
           PageHeader(title: context.l10n.navQueue, subtitle: context.l10n.queueSub),
           const SizedBox(height: 24),
@@ -125,6 +126,7 @@ class _QueueScreenState extends State<QueueScreen> {
           _MobileProgressHeader(campaign: c, store: store),
           Expanded(
             child: PageScroll(
+              onRefresh: store.refresh,
               children: [
                 if (finished) ...[
                   _DoneCard(campaign: c, onRetry: () => _retry(c)).enter(context),
@@ -165,6 +167,7 @@ class _QueueScreenState extends State<QueueScreen> {
     }
 
     return PageScroll(
+      onRefresh: store.refresh,
       children: [
         PageHeader(
           title: context.l10n.navQueue,
