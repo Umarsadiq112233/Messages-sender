@@ -116,8 +116,15 @@ class _ComposeScreenState extends State<ComposeScreen> {
   String? _blockReason(AppStore store, int count, SmsCount sms) {
     if (_msg.text.trim().isEmpty) return context.l10n.blockNoMessage;
     if (count == 0) return context.l10n.blockNoRecipients;
-    if (!store.gateway.connected) return context.l10n.blockGateway;
+    if (!store.gatewayOnline) return context.l10n.blockGateway;
     if (store.activeCampaign != null) return context.l10n.blockRunning;
+    // Daily limit fully used: sending would only queue messages the
+    // gateway must refuse. (A partially-used limit still warns below
+    // and the gateway fails just the overflow, with the reason shown.)
+    final remainingToday = store.todayRemaining;
+    if (remainingToday != null && remainingToday <= 0) {
+      return context.l10n.dailyLimitWarn(store.settings.dailyLimit, 0);
+    }
     // The package block only applies when a package balance has
     // actually been entered in Settings. packageRemaining is 0 when it
     // was never set (the database default), and blocking on that made
@@ -197,7 +204,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
               children: [
                 PageHeader(title: context.l10n.navSend, subtitle: context.l10n.composeSubMobile),
                 const SizedBox(height: 16),
-                if (!store.gateway.connected) ...[_gatewayWarning(context), const SizedBox(height: 14)],
+                if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 14)],
                 recipientsCard.enter(context, index: 1),
                 const SizedBox(height: 14),
                 messageCard.enter(context, index: 2),
@@ -264,7 +271,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
       children: [
         PageHeader(title: context.l10n.navSend, subtitle: context.l10n.composeSubDesktop),
         const SizedBox(height: 22),
-        if (!store.gateway.connected) ...[_gatewayWarning(context), const SizedBox(height: 18)],
+        if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 18)],
         SplitLayout(
           startFlex: 3,
           endFlex: 2,
