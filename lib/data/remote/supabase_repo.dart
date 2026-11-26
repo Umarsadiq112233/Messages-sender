@@ -148,10 +148,46 @@ class SupabaseRepo {
     return rows.isNotEmpty;
   }
 
-  /// Claims a log for sending. Unlike [updateLog] this writes the real
-  /// `sending` status — the gateway phone owns that transition.
-  Future<void> markLogSending(String logId) =>
-      db.from('delivery_logs').update({'status': 'sending'}).eq('id', logId);
+  /// Claims a log for sending, atomically: the update only lands
+  /// while the log is still `pending`, and the caller learns whether
+  /// IT won the claim. Two gateway phones signed into the same account
+  /// (or a restarted gateway racing its old self) can therefore never
+  /// send the same message twice — the loser sees false and skips it.
+  /// Unlike [updateLog] this writes the real `sending` status — the
+  /// gateway phone owns that transition.
+  Future<bool> claimLog(String logId) async {
+    final rows = await db
+        .from('delivery_logs')
+        .update({'status': 'sending'})
+        .eq('id', logId)
+        .eq('status', 'pending')
+        .select('id');
+    return rows.isNotEmpty;
+  }
+
+  /// SMS units actually sent today (local calendar day), counting each
+  /// delivered log by its campaign's segment count — the same unit the
+  /// daily limit is measured in. The gateway uses this to enforce the
+  /// limit on the sending side, not just warn about it in the panel.
+  Future<int> sentSmsToday() async {
+    final now = DateTime.now();
+    final startUtc = DateTime(now.year, now.month, now.day).toUtc().toIso8601String();
+    var total = 0;
+    for (var from = 0; ; from += _page) {
+      final rows = await db
+          .from('delivery_logs')
+          .select('campaigns(segments)')
+          .eq('status', 'sent')
+          .gte('sent_at', startUtc)
+          .range(from, from + _page - 1);
+      for (final r in rows) {
+        final segs = ((r['campaigns'] as Map?)?['segments'] as num?)?.toInt() ?? 1;
+        total += segs < 1 ? 1 : segs;
+      }
+      if (rows.length < _page) break;
+    }
+    return total;
+  }
 
   /// Logs left `sending` by a gateway that died mid-send become pending
   /// again (only for campaigns that are still running).
