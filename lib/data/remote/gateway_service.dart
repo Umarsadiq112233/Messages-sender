@@ -62,7 +62,16 @@ class GatewayService {
 
   /// Requests the SMS permission and starts polling. Returns false when
   /// this platform can't send SMS or the permission was denied.
-  Future<bool> start() async {
+  ///
+  /// [claimOwnership] is true for a manual Connect: pressing Connect IS
+  /// the user choosing this phone as the gateway, so it takes over from
+  /// any other phone. Auto-connect passes false: merely opening the app
+  /// must never steal the gateway from another phone that is live right
+  /// now (same account signed in on several phones — developer, dealer,
+  /// customer — each auto-connect was silently kicking the previous
+  /// gateway off and stalling its queue). A stale owner (no heartbeat
+  /// for 60s) never blocks auto-connect.
+  Future<bool> start({bool claimOwnership = true}) async {
     if (_running) {
       // Already running: if the first heartbeat never landed (the
       // connection was never confirmed), retry it once so the caller
@@ -79,6 +88,23 @@ class GatewayService {
     }
     if (!SmsChannel.isSupported) return false;
     if (!await _channel.requestPermission()) return false;
+    if (!claimOwnership) {
+      // Auto-connect: another phone holding the gateway with a fresh
+      // heartbeat is the active sender — leave it alone. Only a manual
+      // Connect (claimOwnership) takes over.
+      try {
+        final row = await _repo.gateway();
+        final owner = row?['owner_id'] as String?;
+        final seen = DateTime.tryParse('${row?['last_seen'] ?? ''}');
+        final live = row?['connected'] == true &&
+            seen != null &&
+            DateTime.now().toUtc().difference(seen.toUtc()) < const Duration(seconds: 60);
+        if (live && owner != null) return false;
+      } catch (_) {
+        // Row unreadable (offline, un-migrated…) — fall through and
+        // connect as before; the atomic log claim prevents duplicates.
+      }
+    }
     _info = await _channel.deviceInfo();
     // A fresh ownership token for this run: connecting here claims
     // the gateway row (newest connect wins — any previous gateway
@@ -191,7 +217,12 @@ class GatewayService {
         // Ownership unreadable (offline etc.) — keep going; the
         // atomic log claim still prevents any duplicate send.
       }
-      await _heartbeat(true);
+      try {
+        await _heartbeat(true);
+      } catch (_) {
+        // A failed heartbeat (battery read, network) must not abort the
+        // tick before the actual sending below has even been tried.
+      }
       if (!_confirmed) _confirmed = true;
       // Self-heal on every tick, not only in start(): a log left in
       // 'sending' by a run that died mid-send would otherwise block
@@ -207,7 +238,7 @@ class GatewayService {
       final settings = await _repo.settings();
       // Clamp into the fast range: rows saved before the fast-sending
       // change can still hold the retired slow default (20s).
-      final delaySeconds = ((settings?['delay_seconds'] as num?)?.toInt() ?? 2).clamp(1, 5);
+      final delaySeconds = ((settings?['delay_seconds'] as num?)?.toInt() ?? 2).clamp(0, 5);
       // The chosen sending SIM, re-read every tick so a Settings change
       // takes effect on the next message without restarting the gateway.
       // Tolerant default: an un-migrated row has no sim_slot key.
@@ -300,13 +331,24 @@ class GatewayService {
             ..status = res.ok ? DeliveryStatus.sent : DeliveryStatus.failed
             ..reason = res.failReason
             ..time = DateTime.now();
-          await _repo.updateLog(log);
+          try {
+            await _repo.updateLog(log);
+          } catch (_) {
+            // A rejected write-back (e.g. a database migration not run
+            // yet) must not abort the rest of the queue — the next tick
+            // retries this log instead of every remaining message
+            // stalling behind one bad write.
+          }
         }
         if (!_running) return;
         // The campaign is finished once nothing is pending or in flight.
-        if (await _repo.campaignState(c.id) == CampaignState.running &&
-            !await _repo.hasUnfinishedLogs(c.id)) {
-          await _repo.completeCampaign(c.id);
+        try {
+          if (await _repo.campaignState(c.id) == CampaignState.running &&
+              !await _repo.hasUnfinishedLogs(c.id)) {
+            await _repo.completeCampaign(c.id);
+          }
+        } catch (_) {
+          // Completion is bookkeeping — the next tick retries it.
         }
       }
     } catch (_) {
