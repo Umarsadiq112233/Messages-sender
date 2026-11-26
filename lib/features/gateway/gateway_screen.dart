@@ -16,6 +16,7 @@ import '../../core/widgets/common.dart';
 import '../../core/widgets/form_fields.dart';
 import '../../data/app_store.dart';
 import '../../data/models.dart';
+import '../../data/remote/sms_channel.dart';
 import '../../l10n/l10n.dart';
 
 /// Screen 12 — Gateway / Device (the Android phone + SIM that sends SMS).
@@ -61,7 +62,13 @@ class _GatewayScreenState extends State<GatewayScreen> {
     final g = store.gateway;
     final mobile = context.isMobile;
 
-    final status = _StatusCard(gateway: g, connecting: _connecting, onConnect: _connect, onDisconnect: _disconnect);
+    final status = _StatusCard(
+      gateway: g,
+      online: store.gatewayOnline,
+      connecting: _connecting,
+      onConnect: _connect,
+      onDisconnect: _disconnect,
+    );
     final guide = _GuideCard(gateway: g);
     const test = _TestCard();
     final note = InfoBanner(
@@ -79,7 +86,9 @@ class _GatewayScreenState extends State<GatewayScreen> {
           const SizedBox(height: 16),
           status.enter(context, index: 1),
           const SizedBox(height: 14),
-          if (!g.connected) ...[guide.enter(context, index: 2), const SizedBox(height: 14)],
+          const _SimCard().enter(context, index: 2),
+          const SizedBox(height: 14),
+          if (!store.gatewayOnline) ...[guide.enter(context, index: 3), const SizedBox(height: 14)],
           test.enter(context, index: 3),
           const SizedBox(height: 14),
           note.enter(context, index: 4),
@@ -101,7 +110,9 @@ class _GatewayScreenState extends State<GatewayScreen> {
             children: [
               status.enter(context, index: 1),
               const SizedBox(height: 22),
-              if (!g.connected) ...[guide.enter(context, index: 2), const SizedBox(height: 22)],
+              const _SimCard().enter(context, index: 2),
+              const SizedBox(height: 22),
+              if (!store.gatewayOnline) ...[guide.enter(context, index: 3), const SizedBox(height: 22)],
               test.enter(context, index: 3),
             ],
           ),
@@ -118,12 +129,19 @@ class _GatewayScreenState extends State<GatewayScreen> {
 class _StatusCard extends StatelessWidget {
   const _StatusCard({
     required this.gateway,
+    required this.online,
     required this.connecting,
     required this.onConnect,
     required this.onDisconnect,
   });
 
   final GatewayInfo gateway;
+
+  /// Confirmed-online: the stored connected flag AND a fresh
+  /// heartbeat. The card must never show a green "connected" for a
+  /// gateway whose heartbeat has gone stale — that connection is
+  /// assumed, not confirmed.
+  final bool online;
   final bool connecting;
   final VoidCallback onConnect;
   final VoidCallback onDisconnect;
@@ -132,7 +150,7 @@ class _StatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final g = gateway;
     final mobile = context.isMobile;
-    final on = g.connected;
+    final on = online;
     final gradient = on
         ? const LinearGradient(
             begin: Alignment.topLeft,
@@ -593,6 +611,100 @@ class _TestCardState extends State<_TestCard> {
                 btn,
               ],
             ),
+    );
+  }
+}
+
+/// The sending-SIM choice, right where sending is set up — the same
+/// choice as Settings → Sending, but saved the moment a chip is
+/// tapped (no separate Save step). The gateway re-reads the choice
+/// before every message, so a change applies at once and is never
+/// half-applied. A chosen SIM that later goes missing fails its
+/// messages with the "chosen SIM not found" reason — a send never
+/// silently goes out from the other SIM instead.
+class _SimCard extends StatefulWidget {
+  const _SimCard();
+
+  @override
+  State<_SimCard> createState() => _SimCardState();
+}
+
+class _SimCardState extends State<_SimCard> {
+  List<SimInfo> _sims = const [];
+  bool _loadingSims = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // On the Android gateway phone, offer its SIMs as choices. No
+    // permission prompt here — the Load SIMs button asks when tapped.
+    if (SmsChannel.isSupported) _loadSims();
+  }
+
+  Future<void> _loadSims({bool askPermission = false}) async {
+    setState(() => _loadingSims = true);
+    const channel = SmsChannel();
+    if (askPermission) await channel.requestPhoneStatePermission();
+    final sims = await channel.listSims();
+    if (!mounted) return;
+    setState(() {
+      _sims = sims;
+      _loadingSims = false;
+    });
+  }
+
+  String _simLabel(BuildContext context, SimInfo sim) {
+    final n = sim.slot + 1;
+    return sim.carrier.isEmpty ? context.l10n.simSlot(n) : context.l10n.simSlotCarrier(n, sim.carrier);
+  }
+
+  void _choose(int slot) {
+    final store = context.readStore;
+    store.saveSending(delaySeconds: store.settings.delaySeconds, testMode: store.settings.testMode, simSlot: slot);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = context.store.settings.simSlot;
+    return AppCard(
+      icon: Icons.sim_card_rounded,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FieldLabel(context.l10n.sendingSim),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilterChipX(label: context.l10n.simPhoneDefault, selected: selected == -1, onTap: () => _choose(-1)),
+              for (final sim in _sims)
+                FilterChipX(label: _simLabel(context, sim), selected: selected == sim.slot, onTap: () => _choose(sim.slot)),
+              // A saved choice whose SIM isn't listed right now (removed,
+              // or permission not granted yet) still shows as selected, so
+              // the choice is never silently lost.
+              if (selected >= 0 && !_sims.any((s) => s.slot == selected))
+                FilterChipX(label: context.l10n.simSlot(selected + 1), selected: true, onTap: () {}),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(context.l10n.simChoiceCaption, style: AppText.caption),
+          if (SmsChannel.isSupported && _sims.isEmpty) ...[
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: AppButton(
+                label: context.l10n.loadSims,
+                icon: Icons.sim_card_rounded,
+                variant: AppButtonVariant.outline,
+                size: AppButtonSize.sm,
+                loading: _loadingSims,
+                onPressed: () => _loadSims(askPermission: true),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
