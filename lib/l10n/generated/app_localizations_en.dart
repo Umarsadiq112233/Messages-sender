@@ -464,13 +464,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failStopped => 'Stopped by user';
 
   @override
-  String get failNoPermission =>
-      'SMS permission not granted on the gateway phone';
-
-  @override
-  String get failNoSim => 'Selected SIM not available on the gateway phone';
-
-  @override
   String get failLimitReached => 'Daily limit reached';
 
   @override
