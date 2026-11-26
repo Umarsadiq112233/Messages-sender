@@ -1082,7 +1082,7 @@ class _CenterSend extends StatelessWidget {
                             border: Border.all(color: Colors.white, width: 3.5),
                             boxShadow: AppShadows.glow(AppColors.primary, strength: .45),
                           ),
-                          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+                          child: const Icon(Icons.send_rounded, color: Colors.white, size: 28),
                         )
                         .animate(target: active ? 1 : 0)
                         .rotate(begin: 0, end: -.06, duration: 300.ms)
