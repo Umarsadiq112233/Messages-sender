@@ -135,6 +135,9 @@ extension AppLocalizationsX on AppLocalizations {
     FailReason.lowBalance => failLowBalance,
     FailReason.notExist => failNotExist,
     FailReason.stopped => failStopped,
+    FailReason.noPermission => failNoPermission,
+    FailReason.noSim => failNoSim,
+    FailReason.limitReached => failLimitReached,
   };
 
   String audience(Audience a) => switch (a.kind) {
