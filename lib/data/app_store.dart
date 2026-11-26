@@ -76,7 +76,15 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   GatewayService? get _gateway {
     final repo = _repo;
     if (repo == null) return null;
-    return _gatewayService ??= GatewayService(repo);
+    return _gatewayService ??= GatewayService(repo)..onTakenOver = (_) {
+      // Another phone took over as the gateway: this phone is no
+      // longer the sender, and the UI must say so — not keep showing
+      // a green "connected" for a gateway that will never send again.
+      gateway
+        ..connected = false
+        ..disconnectReason = DisconnectReason.lostConnection;
+      notifyListeners();
+    };
   }
 
   Future<void> _chain = Future<void>.value();
@@ -823,8 +831,21 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   /// previous simulated connect is kept.
   Future<bool> connectGateway() async {
     if (isLive && SmsChannel.isSupported) {
+      // One-tap flow: pressing Connect on the gateway phone IS the
+      // intent to send for real, so leave Test Mode as part of the
+      // same tap instead of sending the user to Settings first.
+      if (settings.testMode) {
+        saveSending(delaySeconds: settings.delaySeconds, testMode: false, simSlot: settings.simSlot);
+      }
       final service = _gateway;
       if (service == null || !await service.start()) return false;
+      // "Connected" must be confirmed, not assumed: the service only
+      // confirms once its first heartbeat has actually landed in the
+      // database, so every panel can see this phone as the gateway.
+      // Unconfirmed reports failure here — the service keeps retrying
+      // in the background and realtime flips the panel to connected
+      // the moment the heartbeat lands.
+      if (!service.confirmed) return false;
       // Remember the intent on this device: connect by default at launch.
       unawaited(GatewayIntent.save(true));
       gateway
