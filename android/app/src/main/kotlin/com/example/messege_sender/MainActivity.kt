@@ -45,6 +45,7 @@ class MainActivity : FlutterActivity() {
                     "hasSmsPermission" -> result.success(hasSmsPermission())
                     "requestPhoneStatePermission" -> requestPhoneStatePermission(result)
                     "listSims" -> result.success(listSims())
+                    "simState" -> result.success(simState(call.argument<Int>("simSlot")))
                     "sendSms" -> sendSms(
                         call.argument<String>("to"),
                         call.argument<String>("message"),
@@ -177,6 +178,46 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    /// Whether the SIM a send would use is actually in the phone.
+    /// Returns {available, known}: `known` is false when SIM presence
+    /// can't be determined (no READ_PHONE_STATE and no telephony
+    /// state) — the caller must not block sends on an unknown answer.
+    /// Never crashes; any error reads as unknown.
+    private fun simState(simSlot: Int?): Map<String, Any> {
+        var available: Boolean? = null
+        var known = false
+        try {
+            val subs = if (hasPhoneStatePermission()) {
+                subscriptionManager()?.activeSubscriptionInfoList
+            } else {
+                null
+            }
+            if (subs != null) {
+                known = true
+                available = if (simSlot != null && simSlot >= 0) {
+                    subs.any { it.simSlotIndex == simSlot }
+                } else {
+                    subs.isNotEmpty()
+                }
+            } else if (simSlot == null || simSlot < 0) {
+                // No chosen slot: the phone-default SIM. TelephonyManager
+                // reports its state without extra permission.
+                val tm = getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+                val state = tm?.simState
+                if (state != null) {
+                    known = true
+                    available = state != TelephonyManager.SIM_STATE_ABSENT
+                }
+            }
+            // A chosen slot without READ_PHONE_STATE stays unknown:
+            // subscriptionIdForSlot() in sendSms resolves it per send
+            // and fails that one message with "noSim" if truly absent.
+        } catch (e: Exception) {
+            // Presence unknown — never block on a failed check.
+        }
+        return mapOf("available" to (available ?: true), "known" to known)
     }
 
     private fun sendSms(to: String?, message: String?, simSlot: Int?, result: MethodChannel.Result) {
