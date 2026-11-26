@@ -158,7 +158,7 @@ class Activity {
   ActivityKind get kind => event.kind;
 }
 
-enum FailReason { networkBusy, numberOff, timeout, lowBalance, notExist, stopped }
+enum FailReason { networkBusy, numberOff, timeout, lowBalance, notExist, stopped, noPermission, noSim, limitReached }
 
 enum PauseReason { user, gateway }
 
