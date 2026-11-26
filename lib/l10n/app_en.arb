@@ -133,8 +133,6 @@
   "loadSims": "Load SIMs",
   "failNotExist": "Number doesn't exist",
   "failStopped": "Stopped by user",
-  "failNoPermission": "SMS permission not granted on the gateway phone",
-  "failNoSim": "Selected SIM not available on the gateway phone",
   "failLimitReached": "Daily limit reached",
   "audAll": "All Numbers",
   "audGroup": "Group: {name}",
