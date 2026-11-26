@@ -897,17 +897,6 @@ abstract class AppLocalizations {
   /// **'Rok diya gaya (Stop)'**
   String get failStopped;
 
-  /// No description provided for @failNoPermission.
-  ///
-  /// In ur_Latn, this message translates to:
-  /// **'Gateway phone par SMS permission nahi mili'**
-  String get failNoPermission;
-
-  /// No description provided for @failNoSim.
-  ///
-  /// In ur_Latn, this message translates to:
-  /// **'Gateway phone par selected SIM available nahi'**
-  String get failNoSim;
 
   /// No description provided for @failLimitReached.
   ///
