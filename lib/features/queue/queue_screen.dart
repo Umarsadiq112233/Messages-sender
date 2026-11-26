@@ -59,7 +59,7 @@ class _QueueScreenState extends State<QueueScreen> {
       store.pauseQueue(reason: PauseReason.user);
       AppToast.info(context.l10n.pausedHint, title: context.l10n.sendingPaused);
     } else {
-      if (!store.gateway.connected) {
+      if (!store.gatewayOnline) {
         AppToast.error(context.l10n.connectGatewayFirst, title: context.l10n.resumeFailed);
         return;
       }
@@ -224,7 +224,7 @@ class _QueueScreenState extends State<QueueScreen> {
           icon: const Icon(Icons.play_arrow_rounded, size: 18),
           label: Text(context.l10n.resume, style: TextStyle(fontWeight: FontWeight.w700)),
         ),
-        if (!context.readStore.gateway.connected)
+        if (!context.readStore.gatewayOnline)
           TextButton.icon(
             onPressed: () => context.go('/gateway'),
             icon: const Icon(Icons.phonelink_ring_rounded, size: 18),
