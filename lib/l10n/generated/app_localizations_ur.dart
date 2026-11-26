@@ -451,12 +451,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get failStopped => 'روک دیا گیا (اسٹاپ)';
 
   @override
-  String get failNoPermission => 'گیٹ وے فون پر ایس ایم ایس کی اجازت نہیں ملی';
-
-  @override
-  String get failNoSim => 'گیٹ وے فون پر منتخب سم دستیاب نہیں';
-
-  @override
   String get failLimitReached => 'روزانہ کی حد پوری ہو گئی';
 
   @override
@@ -2629,12 +2623,6 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
 
   @override
   String get failStopped => 'Rok diya gaya (Stop)';
-
-  @override
-  String get failNoPermission => 'Gateway phone par SMS permission nahi mili';
-
-  @override
-  String get failNoSim => 'Gateway phone par selected SIM available nahi';
 
   @override
   String get failLimitReached => 'Daily limit poori ho gayi';
