@@ -369,7 +369,7 @@ class _SendingSectionState extends State<_SendingSection> {
           children: [
             NumberStepper(
               value: _delay,
-              min: 1,
+              min: 0,
               max: 5,
               step: 1,
               suffix: context.l10n.sec,
