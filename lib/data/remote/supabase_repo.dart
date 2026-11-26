@@ -223,19 +223,33 @@ class SupabaseRepo {
     int? battery,
     bool? charging,
     DisconnectReason? disconnectReason,
-  }) => db
-      .from('gateway')
-      .update({
-        'connected': connected,
-        'last_seen': DateTime.now().toUtc().toIso8601String(),
-        if (deviceName != null) 'device_name': deviceName,
-        if (model != null) 'model': model,
-        if (operator != null && operator.isNotEmpty) 'operator': operator,
-        if (battery != null) 'battery': battery,
-        if (charging != null) 'charging': charging,
-        'disconnect_reason': connected ? null : disconnectReason?.name,
-      })
-      .eq('id', 1);
+    String? ownerId,
+    bool clearOwner = false,
+  }) async {
+    final values = <String, dynamic>{
+      'connected': connected,
+      'last_seen': DateTime.now().toUtc().toIso8601String(),
+      if (deviceName != null) 'device_name': deviceName,
+      if (model != null) 'model': model,
+      if (operator != null && operator.isNotEmpty) 'operator': operator,
+      if (battery != null) 'battery': battery,
+      if (charging != null) 'charging': charging,
+      'disconnect_reason': connected ? null : disconnectReason?.name,
+      // Single-gateway ownership: the running gateway stamps its token
+      // on the row; a disconnect by the owner clears it.
+      if (ownerId != null) 'owner_id': ownerId,
+      if (clearOwner) 'owner_id': null,
+    };
+    try {
+      await db.from('gateway').update(values).eq('id', 1);
+    } catch (_) {
+      // A database that hasn't run the owner migration yet would
+      // reject the whole heartbeat — retry without the token so
+      // liveness still lands exactly as before.
+      values.remove('owner_id');
+      await db.from('gateway').update(values).eq('id', 1);
+    }
+  }
 
   // ───────────────────────── Activity, settings, gateway ─────────────────────────
 
