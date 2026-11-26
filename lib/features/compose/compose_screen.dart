@@ -28,6 +28,12 @@ enum _To { all, group, selected }
 String _draft = '';
 
 /// Screen 8 — Compose & Send SMS (the heart of the panel).
+///
+/// Chat-style layout, like the phone's own Messages app: one screen,
+/// a compact recipient selector on top, the conversation area in the
+/// middle (recipients + the message as a chat bubble + a one-line
+/// summary) and the message box pinned to the bottom with a round
+/// send button. No stack of big cards, no long scrolling.
 class ComposeScreen extends StatefulWidget {
   const ComposeScreen({super.key, this.initialMode});
 
@@ -43,7 +49,6 @@ class _ComposeScreenState extends State<ComposeScreen> {
   late _To _to;
   String? _groupId;
   bool _sending = false;
-  bool _showPreview = false;
 
   List<(String, String)> _templates(AppLocalizations l) => [
     (l.tplSaleTitle, l.tplSale),
@@ -175,131 +180,33 @@ class _ComposeScreenState extends State<ComposeScreen> {
     final recipients = _recipients(store);
     final sms = SmsCount.of(_msg.text);
     final reason = _blockReason(store, recipients.length, sms);
+    final pad = mobile ? 16.0 : 24.0;
 
-    final sendBtn = AppButton(
-      label: _sending ? context.l10n.buildingQueue : context.l10n.navSend,
-      icon: Icons.send_rounded,
-      variant: AppButtonVariant.success,
-      size: AppButtonSize.xl,
-      expand: true,
-      loading: _sending,
-      onPressed: reason == null ? _send : null,
-    );
-
-    final recipientsCard = _recipientsCard(context, store, recipients);
-    final messageCard = _messageCard(context, sms);
-    final summary = _SummaryCard(
-      count: recipients.length,
-      sms: sms,
-      store: store,
-      reason: reason,
-      sendButton: mobile ? null : sendBtn,
-    );
-
-    if (mobile) {
-      return Column(
-        children: [
-          Expanded(
-            child: PageScroll(
-              children: [
-                PageHeader(title: context.l10n.navSend, subtitle: context.l10n.composeSubMobile),
-                const SizedBox(height: 16),
-                if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 14)],
-                recipientsCard.enter(context, index: 1),
-                const SizedBox(height: 14),
-                messageCard.enter(context, index: 2),
-                const SizedBox(height: 14),
-                AppCard(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      Material(
-                        type: MaterialType.transparency,
-                        child: ListTile(
-                          minTileHeight: 56,
-                          onTap: () => setState(() => _showPreview = !_showPreview),
-                          leading: const Icon(Icons.phone_iphone_rounded, color: AppColors.primary),
-                          title: Text(context.l10n.phonePreviewQ, style: TextStyle(fontWeight: FontWeight.w700)),
-                          trailing: AnimatedRotation(
-                            turns: _showPreview ? .5 : 0,
-                            duration: const Duration(milliseconds: 300),
-                            child: const Icon(Icons.expand_more_rounded),
-                          ),
-                        ),
-                      ),
-                      AnimatedCrossFade(
-                        duration: const Duration(milliseconds: 350),
-                        sizeCurve: Motion.emphasized,
-                        crossFadeState: _showPreview ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                        firstChild: const SizedBox(width: double.infinity),
-                        secondChild: Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Center(
-                            child: _PhonePreview(text: _msg.text, sim: store.gateway.simNumber, width: 260),
-                          ),
-                        ),
-                      ),
-                    ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 780),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(pad, mobile ? 14 : 20, pad, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  PageHeader(
+                    title: context.l10n.navSend,
+                    subtitle: mobile ? context.l10n.composeSubMobile : context.l10n.composeSubDesktop,
                   ),
-                ).enter(context, index: 3),
-                const SizedBox(height: 14),
-                summary.enter(context, index: 4),
-              ],
-            ),
-          ),
-          StickyActionBar(
-            top: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              child: Text(
-                reason ?? context.l10n.stickySummary(recipients.length, recipients.length * sms.segments),
-                key: ValueKey(reason ?? 'ok'),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w600,
-                  color: reason == null ? AppColors.successDark : AppColors.textMuted,
-                ),
+                  const SizedBox(height: 14),
+                  if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 12)],
+                  _recipientBar(context, store, recipients).enter(context, index: 1),
+                ],
               ),
             ),
-            children: [sendBtn],
-          ),
-        ],
-      );
-    }
-
-    return PageScroll(
-      children: [
-        PageHeader(title: context.l10n.navSend, subtitle: context.l10n.composeSubDesktop),
-        const SizedBox(height: 22),
-        if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 18)],
-        SplitLayout(
-          startFlex: 3,
-          endFlex: 2,
-          gap: 24,
-          start: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              recipientsCard.enter(context, index: 1),
-              const SizedBox(height: 20),
-              messageCard.enter(context, index: 2),
-            ],
-          ),
-          end: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                    child: _PhonePreview(text: _msg.text, sim: store.gateway.simNumber, width: 290),
-                  )
-                  .animate(delay: 250.ms)
-                  .fadeIn(duration: 500.ms)
-                  .slideY(begin: .12, end: 0, duration: 700.ms, curve: Motion.emphasized)
-                  .rotate(begin: .02, end: 0, duration: 700.ms, curve: Motion.emphasized),
-              const SizedBox(height: 22),
-              summary.enter(context, index: 3),
-            ],
-          ),
+            Expanded(child: _chatArea(context, store, recipients, sms)),
+            _inputBar(context, store, recipients, sms, reason),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -315,70 +222,42 @@ class _ComposeScreenState extends State<ComposeScreen> {
     ),
   ).animate().fadeIn().shakeX(hz: 3, amount: 4);
 
-  Widget _recipientsCard(BuildContext context, AppStore store, List<Contact> recipients) {
-    final mobile = context.isMobile;
+  /// Compact recipient selector: one slim bar with a segmented
+  /// All / Group / Selected control, the mode's detail (group chips
+  /// or the "nothing selected" hint) and a single count line — the
+  /// same recipient count used by the summary and the send action.
+  Widget _recipientBar(BuildContext context, AppStore store, List<Contact> recipients) {
     final groupId = _effectiveGroupId(store);
-    // Every tile counts RECIPIENTS (numbers), in the same unit. The
-    // Group tile used to count groups and the Selected tile counted
-    // the raw id set, so the three numbers could not be compared and
-    // neither necessarily matched the list that would actually send.
-    final tiles = [
-      _ModeTile(
-        icon: Icons.groups_rounded,
-        title: context.l10n.audAll,
-        count: store.totalNumbers,
-        selected: _to == _To.all,
-        compact: mobile,
-        onTap: () => setState(() => _to = _To.all),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppShadows.card,
       ),
-      _ModeTile(
-        icon: Icons.folder_shared_rounded,
-        title: context.l10n.group,
-        count: groupId == null ? 0 : store.groupCount(groupId),
-        selected: _to == _To.group,
-        compact: mobile,
-        onTap: () => setState(() {
-          _to = _To.group;
-          _groupId ??= store.groups.firstOrNull?.id;
-        }),
-      ),
-      _ModeTile(
-        icon: Icons.checklist_rounded,
-        title: context.l10n.modeSelected,
-        count: store.selectedContacts.length,
-        selected: _to == _To.selected,
-        compact: mobile,
-        onTap: () => setState(() => _to = _To.selected),
-      ),
-    ];
-
-    return SectionCard(
-      title: context.l10n.whoToSend,
-      subtitle: context.l10n.threeWays,
-      icon: Icons.people_alt_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // IntrinsicHeight + stretch: all three tiles share the
-          // tallest tile's height, so the row stays even when one
-          // tile's title or count wraps longer than the others.
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var i = 0; i < tiles.length; i++) ...[
-                  if (i > 0) SizedBox(width: mobile ? 8 : 12),
-                  Expanded(child: tiles[i]),
-                ],
-              ],
-            ),
+          SegmentedTabs<_To>(
+            height: 46,
+            value: _to,
+            onChanged: (v) => setState(() {
+              _to = v;
+              if (v == _To.group) _groupId ??= store.groups.firstOrNull?.id;
+            }),
+            items: [
+              (value: _To.all, label: context.l10n.audAll, icon: Icons.groups_rounded),
+              (value: _To.group, label: context.l10n.group, icon: Icons.folder_shared_rounded),
+              (value: _To.selected, label: context.l10n.modeSelected, icon: Icons.checklist_rounded),
+            ],
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 300),
             curve: Motion.emphasized,
             child: switch (_to) {
               _To.group => Padding(
-                padding: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.only(top: 12),
                 child: store.groups.isEmpty
                     ? InfoBanner(
                         tone: BannerTone.warning,
@@ -401,7 +280,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                       ),
               ),
               _To.selected when store.selectedContacts.isEmpty => Padding(
-                padding: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.only(top: 12),
                 child: InfoBanner(
                   tone: BannerTone.info,
                   title: context.l10n.noneSelectedTitle,
@@ -417,566 +296,375 @@ class _ComposeScreenState extends State<ComposeScreen> {
               _ => const SizedBox(width: double.infinity),
             },
           ),
-          const SizedBox(height: 18),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: recipients.isEmpty ? AppColors.surfaceAlt : AppColors.successSoft.withValues(alpha: .55),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  recipients.isEmpty ? Icons.person_off_outlined : Icons.campaign_rounded,
-                  color: recipients.isEmpty ? AppColors.textMuted : AppColors.success,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  // Count and its suffix sit on one shared baseline, so
-                  // the line reads as a single sentence at any width —
-                  // before, the big count and the smaller suffix were
-                  // separate row children and the suffix drifted below
-                  // the count when it wrapped.
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      AnimatedCount(
-                        value: recipients.length,
-                        duration: const Duration(milliseconds: 600),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                recipients.isEmpty ? Icons.person_off_outlined : Icons.campaign_rounded,
+                size: 20,
+                color: recipients.isEmpty ? AppColors.textMuted : AppColors.success,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                // Count and its suffix share one baseline, so the line
+                // reads as a single sentence at any width.
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    AnimatedCount(
+                      value: recipients.length,
+                      duration: const Duration(milliseconds: 600),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        // Plural-aware: "1 number will receive it",
+                        // not "1 numbers will receive it".
+                        context.l10n.willGoToSuffixFor(recipients.length),
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                           color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
                         ),
                       ),
-                      Flexible(
-                        child: Text(
-                          // Plural-aware: "1 number will receive it",
-                          // not "1 numbers will receive it".
-                          context.l10n.willGoToSuffixFor(recipients.length),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: recipients.isEmpty ? AppColors.textMuted : AppColors.successDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (recipients.isNotEmpty && !mobile)
-                  SizedBox(
-                    height: 30,
-                    width: 24.0 * math.min(4, recipients.length) + 8,
-                    child: Stack(
-                      children: [
-                        for (var i = 0; i < math.min(4, recipients.length); i++)
-                          Positioned(
-                            left: i * 22.0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: InitialsAvatar(name: recipients[i].name, size: 26),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _messageCard(BuildContext context, SmsCount sms) {
-    final segFill = sms.characters == 0 ? 0.0 : 1 - (sms.remaining / sms.perSegment);
-    return SectionCard(
-      title: context.l10n.message,
-      subtitle: context.l10n.smsRule,
-      icon: Icons.edit_note_rounded,
-      trailing: PopupMenuButton<String>(
-        tooltip: context.l10n.templates,
-        onSelected: (t) => setState(() {
-          _msg.text = t;
-          _msg.selection = TextSelection.collapsed(offset: t.length);
-        }),
-        itemBuilder: (_) => [
-          for (final (title, text) in _templates(context.l10n))
-            PopupMenuItem(
-              value: text,
-              height: 56,
-              child: SizedBox(
-                width: 280,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    Text(
-                      text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppText.caption.copyWith(fontSize: 13),
                     ),
                   ],
                 ),
               ),
-            ),
-        ],
-        child: Pill(
-          label: context.l10n.templates,
-          color: AppColors.primary,
-          icon: Icons.auto_awesome_rounded,
-          large: true,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
-            controller: _msg,
-            minLines: 6,
-            maxLines: 12,
-            onChanged: (_) => setState(() {}),
-            style: const TextStyle(fontSize: 16.5, height: 1.5),
-            decoration: InputDecoration(hintText: context.l10n.messageHint, hintMaxLines: 4),
-          ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Pill(
-                label: sms.unicode ? context.l10n.encUnicode : context.l10n.encGsm,
-                color: sms.unicode ? AppColors.violet : AppColors.primary,
-                icon: sms.unicode ? Icons.translate_rounded : Icons.abc_rounded,
-                large: true,
-              ),
-              Pill(
-                label: context.l10n.charsCount(sms.characters),
-                color: AppColors.textMuted,
-                background: AppColors.bg,
-                large: true,
-              ),
-              Pill(
-                    label: context.l10n.smsCount(sms.segments),
-                    color: sms.segments > 1 ? AppColors.warningDark : AppColors.success,
-                    icon: Icons.sms_rounded,
-                    large: true,
-                  )
-                  .animate(key: ValueKey(sms.segments))
-                  .scaleXY(begin: .8, end: 1, curve: Curves.easeOutBack, duration: 350.ms),
-              if (sms.characters > 0) Text(context.l10n.charsLeft(sms.remaining), style: AppText.caption),
+              if (recipients.isNotEmpty)
+                SizedBox(
+                  height: 28,
+                  width: 22.0 * math.min(4, recipients.length) + 8,
+                  child: Stack(
+                    children: [
+                      for (var i = 0; i < math.min(4, recipients.length); i++)
+                        Positioned(
+                          left: i * 20.0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                            child: InitialsAvatar(name: recipients[i].name, size: 24),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
             ],
           ),
-          const SizedBox(height: 12),
-          Meter(value: segFill, color: sms.unicode ? AppColors.violet : AppColors.primary, height: 6),
-          if (sms.segments > 1) ...[
-            const SizedBox(height: 10),
-            Text(
-              context.l10n.longMessage(sms.segments, sms.perSegment),
-              style: AppText.caption.copyWith(color: AppColors.warningDark),
-            ).animate().fadeIn(),
-          ],
         ],
       ),
     );
   }
-}
 
-class _ModeTile extends StatelessWidget {
-  const _ModeTile({
-    required this.icon,
-    required this.title,
-    required this.count,
-    required this.selected,
-    required this.onTap,
-    required this.compact,
-  });
-
-  final IconData icon;
-  final String title;
-
-  /// Recipients (numbers) this mode will send to — the same unit on
-  /// all three tiles, on mobile and desktop alike.
-  final int count;
-  final bool selected;
-  final bool compact;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: title,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 280),
-            curve: Motion.emphasized,
-            padding: EdgeInsets.all(compact ? 12 : 16),
-            decoration: BoxDecoration(
-              color: selected ? AppColors.primaryTint : Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: selected ? 2 : 1.2),
-              boxShadow: selected ? AppShadows.glow(AppColors.primary, strength: .14) : null,
-            ),
-            child: Column(
-              crossAxisAlignment: compact ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: compact ? MainAxisAlignment.center : MainAxisAlignment.start,
-                  children: [
-                    Icon(icon, color: selected ? AppColors.primary : AppColors.textMuted, size: 26),
-                    if (!compact) ...[
-                      const Spacer(),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: selected ? AppColors.primary : Colors.white,
-                          border: Border.all(color: selected ? AppColors.primary : AppColors.borderStrong, width: 2),
-                        ),
-                        child: selected ? const Icon(Icons.check_rounded, size: 14, color: Colors.white) : null,
-                      ),
-                    ],
-                  ],
-                ),
-                SizedBox(height: compact ? 8 : 12),
-                // FittedBox + no wrapping: the label always stays on
-                // ONE line and shrinks slightly to fit the tile —
-                // before, narrow mobile tiles broke it mid-word
-                // ("All Number / s", "Selecte / d") over three lines.
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: compact ? Alignment.center : Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      color: selected ? AppColors.primary : AppColors.text,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: compact ? Alignment.center : Alignment.centerLeft,
-                  child: Text(
-                    // Same full label everywhere ("12 numbers") —
-                    // mobile used to show a bare number with no unit,
-                    // at a smaller size than desktop, so tiles disagreed.
-                    context.l10n.countNumbers(count),
-                    maxLines: 1,
-                    softWrap: false,
-                    style: AppText.caption,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
-    required this.count,
-    required this.sms,
-    required this.store,
-    required this.reason,
-    this.sendButton,
-  });
-
-  final int count;
-  final SmsCount sms;
-  final AppStore store;
-  final String? reason;
-  final Widget? sendButton;
-
-  @override
-  Widget build(BuildContext context) {
+  /// The conversation area: warnings (if any), the message as a chat
+  /// bubble and one compact summary line — recipients, total SMS,
+  /// left today, estimated time. Everything the old Summary card
+  /// showed, in a fraction of the space.
+  Widget _chatArea(BuildContext context, AppStore store, List<Contact> recipients, SmsCount sms) {
+    final mobile = context.isMobile;
     final s = store.settings;
     final segments = math.max(1, sms.segments);
-    final total = count * (sms.characters == 0 ? 0 : segments);
+    final total = recipients.length * (sms.characters == 0 ? 0 : segments);
     // Remaining today = daily limit − SMS actually sent today (segment
     // weighted, real delivery results). Null when no limit is set.
     final remaining = store.todayRemaining;
     final afterRemaining = remaining == null ? null : remaining - total;
-    final eta = Duration(seconds: count * s.delaySeconds);
+    final eta = Duration(seconds: recipients.length * s.delaySeconds);
     final afterPackage = s.packageRemaining - total;
+    final text = _msg.text;
+    final empty = text.trim().isEmpty;
+    final rtl = RegExp(r'[؀-ۿ]').hasMatch(text);
 
-    return SectionCard(
-      title: context.l10n.summary,
-      subtitle: context.l10n.summarySub,
-      icon: Icons.receipt_long_rounded,
+    Widget fact(String label, String value, {Color? color}) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('$label: ', style: const TextStyle(fontSize: 13.5, color: AppColors.textMuted)),
+        Text(
+          value,
+          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: color ?? AppColors.text),
+        ),
+      ],
+    );
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(mobile ? 16 : 24, 14, mobile ? 16 : 24, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _Line(label: context.l10n.recipients, value: Fmt.number(count)),
-          _Line(label: context.l10n.perNumber, value: sms.characters == 0 ? '—' : context.l10n.segmentsValue(segments)),
-          _Line(label: context.l10n.totalSms, value: Fmt.number(total), strong: true),
-          _Line(
-            label: context.l10n.leftToday,
-            value: remaining == null
-                ? '—'
-                : total == 0
-                ? Fmt.number(remaining)
-                : '${Fmt.number(remaining)} → ${Fmt.number(afterRemaining!)}',
-            color: afterRemaining != null && afterRemaining < 0 ? AppColors.danger : null,
-          ),
-          // The manually entered package balance is only shown when
-          // one was actually entered in Settings — at 0 (never set) it
-          // used to sit here as a misleading "0 left".
-          if (s.packageRemaining > 0)
-            _Line(
-              label: context.l10n.packageLeftShort,
-              value: total == 0
-                  ? Fmt.number(s.packageRemaining)
-                  : '${Fmt.number(s.packageRemaining)} → ${Fmt.number(afterPackage)}',
-              color: afterPackage < 0 ? AppColors.danger : null,
-            ),
-          _Line(
-            label: context.l10n.estTime,
-            value: count == 0 ? '—' : context.l10n.estTimeValue(context.l10n.duration(eta), s.delaySeconds),
-            last: true,
-          ),
           if (remaining != null && total > remaining && total > 0) ...[
-            const SizedBox(height: 12),
             InfoBanner(tone: BannerTone.warning, message: context.l10n.dailyLimitWarn(s.dailyLimit, remaining)),
+            const SizedBox(height: 10),
           ],
           if (s.testMode) ...[
-            const SizedBox(height: 12),
             InfoBanner(tone: BannerTone.info, icon: Icons.science_outlined, message: context.l10n.testModeOnNote),
+            const SizedBox(height: 10),
           ],
-          if (sendButton != null) ...[
-            const SizedBox(height: 20),
-            sendButton!,
-            AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              child: reason == null
-                  ? const SizedBox(width: double.infinity)
-                  : Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.info_outline_rounded, size: 17, color: AppColors.textMuted),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(reason!, style: AppText.caption, textAlign: TextAlign.center),
-                          ),
-                        ],
+          Center(
+            child: Text(context.l10n.today, style: TextStyle(fontSize: 11.5, color: AppColors.textMuted)),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              alignment: Alignment.topRight,
+              child: Container(
+                constraints: BoxConstraints(maxWidth: mobile ? 300 : 520),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: empty ? Colors.white : AppColors.primary,
+                  border: empty ? Border.all(color: AppColors.border) : null,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(4),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(18),
+                  ),
+                ),
+                child: empty
+                    ? const _TypingDots()
+                    : Text(
+                        text,
+                        textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                        style: const TextStyle(fontSize: 15, height: 1.45, color: Colors.white),
                       ),
-                    ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _Line extends StatelessWidget {
-  const _Line({required this.label, required this.value, this.strong = false, this.color, this.last = false});
-  final String label;
-  final String value;
-  final bool strong;
-  final Color? color;
-  final bool last;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 11),
-      decoration: BoxDecoration(
-        border: last ? null : const Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: Text(label, style: AppText.bodyMuted.copyWith(fontSize: 15))),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Text(
-              value,
-              key: ValueKey(value),
-              style: AppText.mono.copyWith(
-                fontSize: strong ? 17 : 15,
-                fontWeight: strong ? FontWeight.w800 : FontWeight.w600,
-                color: color ?? (strong ? AppColors.primary : AppColors.text),
               ),
             ),
+          ),
+          if (!empty)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, right: 4),
+              child: Text(
+                '${Fmt.time(DateTime.now())} · ${context.l10n.smsCount(segments)}',
+                textAlign: TextAlign.right,
+                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+              ),
+            ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              fact(context.l10n.recipients, Fmt.number(recipients.length)),
+              const Text('•', style: TextStyle(color: AppColors.textSubtle)),
+              fact(context.l10n.totalSms, Fmt.number(total)),
+              const Text('•', style: TextStyle(color: AppColors.textSubtle)),
+              fact(
+                context.l10n.leftToday,
+                remaining == null
+                    ? '—'
+                    : total == 0
+                    ? Fmt.number(remaining)
+                    : '${Fmt.number(remaining)} → ${Fmt.number(afterRemaining!)}',
+                color: afterRemaining != null && afterRemaining < 0 ? AppColors.danger : null,
+              ),
+              // The manually entered package balance is only shown
+              // when one was actually entered in Settings — at 0
+              // (never set) it used to sit as a misleading "0 left".
+              if (s.packageRemaining > 0) ...[
+                const Text('•', style: TextStyle(color: AppColors.textSubtle)),
+                fact(
+                  context.l10n.packageLeftShort,
+                  total == 0
+                      ? Fmt.number(s.packageRemaining)
+                      : '${Fmt.number(s.packageRemaining)} → ${Fmt.number(afterPackage)}',
+                  color: afterPackage < 0 ? AppColors.danger : null,
+                ),
+              ],
+              if (recipients.isNotEmpty) ...[
+                const Text('•', style: TextStyle(color: AppColors.textSubtle)),
+                fact(context.l10n.estTime, context.l10n.estTimeValue(context.l10n.duration(eta), s.delaySeconds)),
+              ],
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-/// Phone frame showing exactly how the SMS will look.
-class _PhonePreview extends StatelessWidget {
-  const _PhonePreview({required this.text, required this.sim, this.width = 280});
-  final String text;
-  final String sim;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    final empty = text.trim().isEmpty;
-    final rtl = RegExp(r'[؀-ۿ]').hasMatch(text);
+  /// Chat-style input bar pinned to the bottom: segment meter, the
+  /// block reason (or live count line), then templates button, the
+  /// message field and a round send button.
+  Widget _inputBar(BuildContext context, AppStore store, List<Contact> recipients, SmsCount sms, String? reason) {
+    final segFill = sms.characters == 0 ? 0.0 : 1 - (sms.remaining / sms.perSegment);
+    final canSend = reason == null && !_sending;
     return Container(
-      width: width,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(38),
-        boxShadow: AppShadows.floating,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.border)),
+        boxShadow: AppShadows.bar,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(29),
-        child: Container(
-          height: width * 1.55,
-          color: const Color(0xFFF1F5F9),
-          child: Column(
-            children: [
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          Fmt.time(DateTime.now()),
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                        const Spacer(),
-                        Container(
-                          width: 56,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.signal_cellular_alt_rounded, size: 14),
-                        const SizedBox(width: 3),
-                        const Icon(Icons.battery_5_bar_rounded, size: 14),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.arrow_back_ios_new_rounded, size: 14, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        const LogoMark(size: 30),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(sim, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
-                              Text(context.l10n.simLabel, style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Meter(value: segFill, color: sms.unicode ? AppColors.violet : AppColors.primary, height: 4),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Center(
-                        child: Text(context.l10n.today, style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                      Pill(
+                        label: sms.unicode ? context.l10n.encUnicode : context.l10n.encGsm,
+                        color: sms.unicode ? AppColors.violet : AppColors.primary,
+                        icon: sms.unicode ? Icons.translate_rounded : Icons.abc_rounded,
                       ),
-                      const SizedBox(height: 10),
-                      Flexible(
-                        child: AnimatedSize(
-                          duration: const Duration(milliseconds: 220),
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            constraints: BoxConstraints(maxWidth: width * .78),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(4),
-                                topRight: Radius.circular(18),
-                                bottomLeft: Radius.circular(18),
-                                bottomRight: Radius.circular(18),
-                              ),
-                            ),
-                            child: empty
-                                ? const _TypingDots()
-                                : SingleChildScrollView(
-                                    child: Text(
-                                      text,
-                                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                                      style: const TextStyle(fontSize: 14, height: 1.4, color: AppColors.text),
-                                    ),
-                                  ),
-                          ),
-                        ),
+                      Pill(
+                        label: context.l10n.charsCount(sms.characters),
+                        color: AppColors.textMuted,
+                        background: AppColors.bg,
                       ),
-                      if (!empty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6, left: 4),
-                          child: Text(
-                            Fmt.time(DateTime.now()),
-                            style: const TextStyle(fontSize: 10.5, color: AppColors.textMuted),
-                          ),
+                      Pill(
+                            label: context.l10n.smsCount(sms.segments),
+                            color: sms.segments > 1 ? AppColors.warningDark : AppColors.success,
+                            icon: Icons.sms_rounded,
+                          )
+                          .animate(key: ValueKey(sms.segments))
+                          .scaleXY(begin: .8, end: 1, curve: Curves.easeOutBack, duration: 350.ms),
+                      if (sms.characters > 0) Text(context.l10n.charsLeft(sms.remaining), style: AppText.caption),
+                      if (sms.segments > 1)
+                        Text(
+                          context.l10n.longMessage(sms.segments, sms.perSegment),
+                          style: AppText.caption.copyWith(color: AppColors.warningDark),
                         ),
                     ],
                   ),
-                ),
-              ),
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                  const SizedBox(height: 8),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: Text(
+                      reason ?? context.l10n.stickySummary(recipients.length, recipients.length * sms.segments),
+                      key: ValueKey(reason ?? 'ok'),
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: reason == null ? AppColors.successDark : AppColors.textMuted,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppColors.primary,
-                      child: Icon(Icons.send_rounded, color: Colors.white, size: 15),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      PopupMenuButton<String>(
+                        tooltip: context.l10n.templates,
+                        onSelected: (t) => setState(() {
+                          _msg.text = t;
+                          _msg.selection = TextSelection.collapsed(offset: t.length);
+                        }),
+                        itemBuilder: (_) => [
+                          for (final (title, text) in _templates(context.l10n))
+                            PopupMenuItem(
+                              value: text,
+                              height: 56,
+                              child: SizedBox(
+                                width: 280,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                    Text(
+                                      text,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppText.caption.copyWith(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(color: AppColors.primaryTint, shape: BoxShape.circle),
+                          child: const Icon(Icons.auto_awesome_rounded, color: AppColors.primary, size: 22),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _msg,
+                          minLines: 1,
+                          maxLines: 5,
+                          onChanged: (_) => setState(() {}),
+                          style: const TextStyle(fontSize: 16, height: 1.4),
+                          decoration: InputDecoration(
+                            hintText: context.l10n.messageHint,
+                            hintMaxLines: 2,
+                            filled: true,
+                            fillColor: AppColors.surfaceAlt,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: const BorderSide(color: AppColors.primary, width: 1.4),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Semantics(
+                        button: true,
+                        label: context.l10n.navSend,
+                        child: Material(
+                          color: canSend ? AppColors.success : AppColors.disabledBg,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: canSend ? _send : null,
+                            child: SizedBox(
+                              width: 52,
+                              height: 52,
+                              child: _sending
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(14),
+                                      child: CircularProgressIndicator(strokeWidth: 2.6, color: Colors.white),
+                                    )
+                                  : Icon(
+                                      Icons.send_rounded,
+                                      color: canSend ? Colors.white : AppColors.disabledFg,
+                                      size: 24,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_sending)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(context.l10n.buildingQueue, style: AppText.caption, textAlign: TextAlign.center),
                     ),
-                  ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
+    ).animate().slideY(begin: 1, end: 0, delay: 150.ms, duration: 520.ms, curve: Motion.emphasized);
   }
 }
 
