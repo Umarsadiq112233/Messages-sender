@@ -133,8 +133,6 @@
   "loadSims": "سمیں لوڈ کریں",
   "failNotExist": "نمبر موجود نہیں",
   "failStopped": "روک دیا گیا (اسٹاپ)",
-  "failNoPermission": "گیٹ وے فون پر ایس ایم ایس کی اجازت نہیں ملی",
-  "failNoSim": "گیٹ وے فون پر منتخب سم دستیاب نہیں",
   "failLimitReached": "روزانہ کی حد پوری ہو گئی",
   "audAll": "تمام نمبر",
   "audGroup": "گروپ: {name}",
