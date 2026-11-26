@@ -105,9 +105,15 @@ create table if not exists public.gateway (
   charging          boolean not null default false,
   last_seen         timestamptz not null default now(),
   pair_code         text not null default lpad((floor(random() * 1000))::text, 3, '0') || '-' || lpad((floor(random() * 1000))::text, 3, '0'),
-  disconnect_reason text check (disconnect_reason in ('lostConnection', 'byUser'))
+  disconnect_reason text check (disconnect_reason in ('lostConnection', 'byUser')),
+  owner_id          text
 );
 insert into public.gateway (id) values (1) on conflict (id) do nothing;
+
+-- Migration for existing databases (safe to re-run): the ownership
+-- token of the one active gateway run (single gateway; the newest
+-- connect wins and the previous gateway stops itself).
+alter table public.gateway add column if not exists owner_id text;
 
 -- ─────────────────────────── Row Level Security ───────────────────────────
 -- Shared admin account: any signed-in user has full access; anonymous has none.
