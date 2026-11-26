@@ -667,7 +667,6 @@ class _SimCardState extends State<_SimCard> {
   Widget build(BuildContext context) {
     final selected = context.store.settings.simSlot;
     return AppCard(
-      icon: Icons.sim_card_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
