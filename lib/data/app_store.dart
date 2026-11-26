@@ -709,7 +709,7 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setDelay(int seconds) {
-    settings.delaySeconds = seconds.clamp(1, 5);
+    settings.delaySeconds = seconds.clamp(0, 5);
     _push((r) => r.saveSettings(settings));
     notifyListeners();
   }
@@ -816,7 +816,7 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
       if (_gatewayService?.isRunning ?? false) return;
       if (!await GatewayIntent.load()) return;
       if (!await const SmsChannel().hasPermission()) return;
-      await connectGateway();
+      await connectGateway(auto: true);
     } catch (_) {
       // Auto-connect must never break startup or resume.
     } finally {
@@ -829,7 +829,11 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   /// and begins sending queued messages from this phone's SIM; false is
   /// returned when the permission is denied. Everywhere else the
   /// previous simulated connect is kept.
-  Future<bool> connectGateway() async {
+  /// [auto] is true for the silent auto-connect at launch/resume: it
+  /// must not take the gateway over from another phone that is live
+  /// right now (same account on several phones). A manual Connect
+  /// always claims — that tap is the user choosing this phone.
+  Future<bool> connectGateway({bool auto = false}) async {
     if (isLive && SmsChannel.isSupported) {
       // One-tap flow: pressing Connect on the gateway phone IS the
       // intent to send for real, so leave Test Mode as part of the
@@ -838,7 +842,7 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
         saveSending(delaySeconds: settings.delaySeconds, testMode: false, simSlot: settings.simSlot);
       }
       final service = _gateway;
-      if (service == null || !await service.start()) return false;
+      if (service == null || !await service.start(claimOwnership: !auto)) return false;
       // "Connected" must be confirmed, not assumed: the service only
       // confirms once its first heartbeat has actually landed in the
       // database, so every panel can see this phone as the gateway.
