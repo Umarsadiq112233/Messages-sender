@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import '../../core/utils/phone.dart';
 import '../models.dart';
@@ -25,6 +26,25 @@ class GatewayService {
   Timer? _timer;
   bool _running = false;
   bool _tickBusy = false;
+
+  /// This run's gateway-ownership token, stamped on the gateway row
+  /// with every heartbeat (single active gateway — see _checkOwnership).
+  String? _sessionId;
+
+  /// True once this run's first heartbeat has actually landed in the
+  /// database — the connection is then confirmed (visible to every
+  /// panel), not merely assumed because start() was called.
+  bool _confirmed = false;
+  bool get confirmed => _confirmed;
+
+  /// True when another phone has taken over as the gateway.
+  bool _tookOver = false;
+  bool get tookOver => _tookOver;
+
+  /// Called when another phone takes over as the gateway, with the
+  /// new gateway's device name. The store uses it to flip this
+  /// phone's UI to a visible "disconnected" state.
+  void Function(String? deviceName)? onTakenOver;
   Map<String, String> _info = const {};
   int? _battery;
   bool _charging = false;
@@ -43,17 +63,38 @@ class GatewayService {
   /// Requests the SMS permission and starts polling. Returns false when
   /// this platform can't send SMS or the permission was denied.
   Future<bool> start() async {
-    if (_running) return true;
+    if (_running) {
+      // Already running: if the first heartbeat never landed (the
+      // connection was never confirmed), retry it once so the caller
+      // can report a confirmed connection honestly.
+      if (!_confirmed) {
+        try {
+          await _heartbeat(true);
+          _confirmed = true;
+        } catch (_) {
+          // Still unconfirmed — the poll keeps retrying.
+        }
+      }
+      return true;
+    }
     if (!SmsChannel.isSupported) return false;
     if (!await _channel.requestPermission()) return false;
     _info = await _channel.deviceInfo();
+    // A fresh ownership token for this run: connecting here claims
+    // the gateway row (newest connect wins — any previous gateway
+    // sees the foreign token on its next tick and stops itself).
+    _sessionId = '${DateTime.now().microsecondsSinceEpoch}-${Random().nextInt(0x7fffffff)}';
+    _tookOver = false;
     _running = true;
     try {
       // A previous run may have died mid-send; its logs can be sent again.
       await _repo.resetStaleSending();
       await _heartbeat(true);
+      _confirmed = true;
     } catch (_) {
-      // The first poll retries — sending must not wait on the heartbeat.
+      // Unconfirmed — the poll retries the heartbeat; connect callers
+      // report "not confirmed" instead of pretending all is well.
+      _confirmed = false;
     }
     _timer = Timer.periodic(_pollInterval, (_) => unawaited(_tick()));
     unawaited(_tick());
@@ -67,11 +108,34 @@ class GatewayService {
     _running = false;
     _timer?.cancel();
     _timer = null;
+    if (_tookOver) {
+      // Another phone owns the gateway row now — writing anything
+      // here (even "disconnected") would clobber ITS live state.
+      return;
+    }
     try {
       await _heartbeat(false, reason: reason);
     } catch (_) {
       // Signing out / offline — panels notice the stale last_seen anyway.
     }
+  }
+
+  /// True while this run still owns the gateway row. When another
+  /// phone has connected since, its token is on the row: this run
+  /// then stops WITHOUT writing to the row (it belongs to the new
+  /// gateway now) and reports the takeover, so this phone's panel
+  /// visibly drops to "disconnected" instead of two phones both
+  /// believing they are the gateway.
+  Future<bool> _checkOwnership() async {
+    final row = await _repo.gateway();
+    final owner = row?['owner_id'] as String?;
+    if (owner == null || _sessionId == null || owner == _sessionId) return true;
+    _tookOver = true;
+    _running = false;
+    _timer?.cancel();
+    _timer = null;
+    onTakenOver?.call(row?['device_name'] as String?);
+    return false;
   }
 
   /// Every heartbeat re-reads the phone's real battery first, so the
@@ -91,6 +155,8 @@ class GatewayService {
       battery: _battery,
       charging: _battery == null ? null : _charging,
       disconnectReason: reason,
+      ownerId: connected ? _sessionId : null,
+      clearOwner: !connected,
     );
   }
 
@@ -116,7 +182,17 @@ class GatewayService {
     if (!_running || _tickBusy) return;
     _tickBusy = true;
     try {
+      // Single-gateway ownership first: if another phone has taken
+      // over since the last tick, stop quietly — never heartbeat over
+      // its row and never send alongside it.
+      try {
+        if (!await _checkOwnership()) return;
+      } catch (_) {
+        // Ownership unreadable (offline etc.) — keep going; the
+        // atomic log claim still prevents any duplicate send.
+      }
       await _heartbeat(true);
+      if (!_confirmed) _confirmed = true;
       // Self-heal on every tick, not only in start(): a log left in
       // 'sending' by a run that died mid-send would otherwise block
       // its campaign forever (the work list only fetches 'pending',
