@@ -399,7 +399,7 @@ class SupabaseRepo {
       ..packageRemaining = (r['package_remaining'] as num).toInt()
       // Older saved rows can still hold the retired slow default (20s);
       // clamp into the fast range so sending stays quick.
-      ..delaySeconds = (r['delay_seconds'] as num).toInt().clamp(1, 5)
+      ..delaySeconds = (r['delay_seconds'] as num).toInt().clamp(0, 5)
       ..testMode = r['test_mode'] as bool
       // Tolerant: a row from an un-migrated database has no sim_slot
       // key at all — that means "phone default".
