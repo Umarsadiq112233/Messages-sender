@@ -53,6 +53,21 @@ class AppStore extends ChangeNotifier with WidgetsBindingObserver {
   /// True when a Supabase key is configured.
   bool get isLive => SupabaseConfig.isConfigured;
 
+  /// True when the gateway is connected AND its heartbeat is fresh.
+  /// The stored `connected` flag alone can be stale-true: if the
+  /// gateway phone dies, is swiped away or loses network, its
+  /// disconnect write never happens and the row keeps claiming
+  /// "connected" while nothing would actually send — the panel then
+  /// happily enqueues campaigns that sit pending forever. In live
+  /// mode the heartbeat (every 2s while the gateway runs) is the
+  /// truth: no beat for a minute means not online. Demo mode has no
+  /// real heartbeat, so there the flag alone decides.
+  bool get gatewayOnline {
+    if (!gateway.connected) return false;
+    if (!isLive) return true;
+    return DateTime.now().difference(gateway.lastSeen) < const Duration(seconds: 60);
+  }
+
   SupabaseRepo? _repo;
   GatewayService? _gatewayService;
   RealtimeChannel? _channel;
