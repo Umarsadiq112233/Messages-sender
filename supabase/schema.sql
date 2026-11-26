@@ -80,7 +80,7 @@ create table if not exists public.app_settings (
   id                int primary key default 1 check (id = 1),
   daily_limit       int  not null default 100 check (daily_limit > 0),
   package_remaining int  not null default 0 check (package_remaining >= 0),
-  delay_seconds     int  not null default 2 check (delay_seconds between 1 and 5),
+  delay_seconds     int  not null default 2 check (delay_seconds between 0 and 5),
   test_mode         boolean not null default true,
   sim_slot          int  not null default -1,
   updated_at        timestamptz not null default now()
