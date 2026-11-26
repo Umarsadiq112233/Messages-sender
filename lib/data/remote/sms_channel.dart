@@ -32,8 +32,11 @@ class SmsSendResult {
     'radioOff' => FailReason.networkBusy,
     'nullPdu' => FailReason.notExist,
     'timeout' => FailReason.timeout,
-    // 'noSim' and everything else: the send did not happen; the test-SMS
-    // UI special-cases 'noSim' with its own message.
+    // These two used to fall through to networkBusy, which sent the
+    // user chasing a network problem when the real cause was on the
+    // gateway phone itself (permission revoked / chosen SIM missing).
+    'noPermission' => FailReason.noPermission,
+    'noSim' => FailReason.noSim,
     _ => FailReason.networkBusy,
   };
 }
@@ -132,6 +135,24 @@ class SmsChannel {
       ];
     } catch (_) {
       return const [];
+    }
+  }
+
+  /// True when the SIM that would send is actually present: the
+  /// chosen slot's SIM when [simSlot] >= 0, otherwise any active SIM.
+  /// Only a definite "no SIM" returns false — when Android can't tell
+  /// (e.g. the phone-state permission is missing) this returns true and
+  /// the per-message send path reports its own precise outcome instead.
+  Future<bool> simAvailable({int simSlot = -1}) async {
+    if (!isSupported) return true;
+    try {
+      final raw = await _channel.invokeMethod<Map<Object?, Object?>>('simState', {'simSlot': simSlot});
+      if (raw == null) return true;
+      final known = raw['known'] == true;
+      final available = raw['available'] == true;
+      return !known || available;
+    } catch (_) {
+      return true;
     }
   }
 
