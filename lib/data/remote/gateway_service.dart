@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../core/utils/phone.dart';
 import '../models.dart';
 import 'sms_channel.dart';
 import 'supabase_repo.dart';
@@ -93,11 +94,40 @@ class GatewayService {
     );
   }
 
+  /// Fails every (pending) log of [c] with [reason] and stamps the
+  /// time — used by the pre-send condition checks, where the honest
+  /// outcome is "not sent, and here is exactly why", written back so
+  /// every panel shows it instead of a queue that silently stalls.
+  Future<void> _failAll(Campaign c, FailReason reason) async {
+    for (final log in c.logs) {
+      log
+        ..status = DeliveryStatus.failed
+        ..reason = reason
+        ..time = DateTime.now();
+      try {
+        await _repo.updateLog(log);
+      } catch (_) {
+        // One failed write must not stop the rest being marked.
+      }
+    }
+  }
+
   Future<void> _tick() async {
     if (!_running || _tickBusy) return;
     _tickBusy = true;
     try {
       await _heartbeat(true);
+      // Self-heal on every tick, not only in start(): a log left in
+      // 'sending' by a run that died mid-send would otherwise block
+      // its campaign forever (the work list only fetches 'pending',
+      // and the completion check counts 'sending' as unfinished).
+      // Safe mid-run: this service sends serially, so at tick start
+      // none of its own sends are in flight.
+      try {
+        await _repo.resetStaleSending();
+      } catch (_) {
+        // Best-effort — the sends below still proceed.
+      }
       final settings = await _repo.settings();
       // Clamp into the fast range: rows saved before the fast-sending
       // change can still hold the retired slow default (20s).
@@ -106,13 +136,73 @@ class GatewayService {
       // takes effect on the next message without restarting the gateway.
       // Tolerant default: an un-migrated row has no sim_slot key.
       final simSlot = (settings?['sim_slot'] as num?)?.toInt() ?? -1;
+      final dailyLimit = (settings?['daily_limit'] as num?)?.toInt() ?? 0;
       final campaigns = await _repo.runningCampaigns();
+      if (campaigns.isEmpty) return;
+
+      // ── Pre-send condition checks, once per tick ──────────────────
+      // Each one fails the queued logs with its real reason instead of
+      // letting every message bounce off the radio and come back with
+      // a misleading generic error (or stall silently).
+      if (!await _channel.hasPermission()) {
+        // Granted at start(), but revoked since (system settings, a
+        // permission reset…). Nothing can send: fail the queue with
+        // the true reason and disconnect, so the panel stops showing
+        // a live gateway that cannot actually send.
+        for (final c in campaigns) {
+          await _failAll(c, FailReason.noPermission);
+          await _repo.completeCampaign(c.id);
+        }
+        await stop(reason: DisconnectReason.lostConnection);
+        return;
+      }
+      if (!await _channel.simAvailable(simSlot: simSlot)) {
+        // The SIM that should send is not in the phone (removed, or
+        // the other slot chosen). Fail fast with the real reason
+        // instead of a radio error per message.
+        for (final c in campaigns) {
+          await _failAll(c, FailReason.noSim);
+          await _repo.completeCampaign(c.id);
+        }
+        return;
+      }
+      // SMS units already sent today, for the daily-limit check below.
+      var sentToday = dailyLimit > 0 ? await _repo.sentSmsToday() : 0;
+
       var firstSend = true;
       for (final c in campaigns) {
-        for (final log in c.logs) {
+        final segments = c.segments < 1 ? 1 : c.segments;
+        for (var i = 0; i < c.logs.length; i++) {
+          final log = c.logs[i];
           if (!_running) return;
           // The panel may have paused/stopped this campaign since the fetch.
           if (await _repo.campaignState(c.id) != CampaignState.running) break;
+          // A stored number that is not a valid Pakistani mobile can
+          // never be delivered. Fail it here with a clear reason
+          // instead of handing it to the radio, whose generic failure
+          // would be misreported as a balance problem.
+          if (!Phone.isValid(log.phone)) {
+            log
+              ..status = DeliveryStatus.failed
+              ..reason = FailReason.notExist
+              ..time = DateTime.now();
+            await _repo.updateLog(log);
+            continue;
+          }
+          // Daily limit: once today's allowance is used up, this and
+          // every remaining message of the campaign fail with the
+          // limit reason — the panel used to only warn while the
+          // gateway kept sending into carrier throttling.
+          if (dailyLimit > 0 && sentToday + segments > dailyLimit) {
+            for (final rest in c.logs.skip(i)) {
+              rest
+                ..status = DeliveryStatus.failed
+                ..reason = FailReason.limitReached
+                ..time = DateTime.now();
+              await _repo.updateLog(rest);
+            }
+            break;
+          }
           if (!firstSend) {
             await Future<void>.delayed(Duration(seconds: delaySeconds));
             if (!_running) return;
@@ -125,8 +215,11 @@ class GatewayService {
           } catch (_) {
             // Best-effort — a failed heartbeat must not stop the send.
           }
-          await _repo.markLogSending(log.id);
+          // Atomic claim: if another gateway (same account, second
+          // phone) already took this log, skip it — never send twice.
+          if (!await _repo.claimLog(log.id)) continue;
           final res = await _channel.sendResult(log.phone, c.message, simSlot: simSlot);
+          if (res.ok) sentToday += segments;
           log
             ..status = res.ok ? DeliveryStatus.sent : DeliveryStatus.failed
             ..reason = res.failReason
