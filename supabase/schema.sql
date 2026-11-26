@@ -58,7 +58,7 @@ create table if not exists public.delivery_logs (
   phone       text not null,
   status      text not null default 'pending'
               check (status in ('pending', 'sending', 'sent', 'failed')),
-  reason      text check (reason in ('networkBusy', 'numberOff', 'timeout', 'lowBalance', 'notExist', 'stopped')),
+  reason      text check (reason in ('networkBusy', 'numberOff', 'timeout', 'lowBalance', 'notExist', 'stopped', 'noPermission', 'noSim', 'limitReached')),
   sent_at     timestamptz,
   position    int not null default 0
 );
