@@ -11,7 +11,6 @@ import '../../core/theme/app_text.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/sms_counter.dart';
 import '../../core/widgets/app_button.dart';
-import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_dialogs.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../core/widgets/badges.dart';
@@ -168,22 +167,108 @@ class _ComposeScreenState extends State<ComposeScreen> {
     return null;
   }
 
+  /// The SIM label exactly as the dropdown shows it — used by the
+  /// confirm dialog's "Send from" row so both always agree.
+  String _currentSimLabel(AppStore store) =>
+      store.settings.simSlot < 0 ? context.l10n.simPhoneDefault : _simLabel(store.settings.simSlot);
+
+  /// Reference-design confirm dialog: a short summary card —
+  /// recipients, total SMS, sending SIM — with the Test Mode note
+  /// when it applies. Confirming runs the existing send flow.
+  Future<bool> _confirmSend(AppStore store, int recipientCount, int totalSms) async {
+    final l = context.l10n;
+    final result = await showAppModal<bool>(
+      context,
+      maxWidth: 420,
+      builder: (ctx) {
+        Widget row(String label, String value) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(fontSize: 14.5, color: AppColors.textMuted),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+        );
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l.sendThisMessage, style: AppText.h3),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  children: [
+                    row(l.recipients, Fmt.number(recipientCount)),
+                    const Divider(height: 1),
+                    row(l.totalSmsShort, Fmt.number(totalSms)),
+                    const Divider(height: 1),
+                    row(l.sendFrom, _currentSimLabel(store)),
+                  ],
+                ),
+              ),
+              if (store.settings.testMode) ...[
+                const SizedBox(height: 12),
+                InfoBanner(
+                  tone: BannerTone.info,
+                  icon: Icons.science_outlined,
+                  message: l.sendConfirmTestNote.trim(),
+                ),
+              ],
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      label: l.cancel,
+                      variant: AppButtonVariant.outline,
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AppButton(
+                      label: l.sendNow,
+                      icon: Icons.send_rounded,
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    return result ?? false;
+  }
+
   Future<void> _send() async {
     final store = context.readStore;
     final recipients = _recipients(store);
     final sms = SmsCount.of(_msg.text);
     final total = recipients.length * sms.segments;
-    final ok = await showConfirmDialog(
-      context,
-      title: context.l10n.sendConfirmTitle,
-      message:
-          context.l10n.sendConfirmMsg(recipients.length, sms.segments, total) +
-          (store.settings.testMode ? context.l10n.sendConfirmTestNote : ''),
-      confirmLabel: context.l10n.yesSend,
-      cancelLabel: context.l10n.notNow,
-      icon: Icons.send_rounded,
-      destructive: false,
-    );
+    final ok = await _confirmSend(store, recipients.length, total);
     if (!ok || !mounted) return;
     setState(() => _sending = true);
     await Future<void>.delayed(const Duration(milliseconds: 600));
@@ -220,10 +305,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  PageHeader(
-                    title: context.l10n.navSend,
-                    subtitle: mobile ? context.l10n.composeSubMobile : context.l10n.composeSubDesktop,
-                  ),
+                  _header(context, store),
                   const SizedBox(height: 14),
                   if (!store.gatewayOnline) ...[_gatewayWarning(context), const SizedBox(height: 12)],
                   _recipientBar(context, store, recipients).enter(context, index: 1),
@@ -238,15 +320,96 @@ class _ComposeScreenState extends State<ComposeScreen> {
     );
   }
 
-  Widget _gatewayWarning(BuildContext context) => InfoBanner(
-    tone: BannerTone.danger,
-    title: context.l10n.gatewayNotConnectedShort,
-    message: context.l10n.gatewayWarnMsg,
-    action: TextButton.icon(
-      onPressed: () => context.go('/gateway'),
-      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-      icon: const Icon(Icons.phonelink_ring_rounded, size: 18),
-      label: Text(context.l10n.openGateway, style: TextStyle(fontWeight: FontWeight.w700)),
+  /// Screen header in the reference layout: send-icon mark, the
+  /// "New message" title with the app name under it, and a live
+  /// Connected / Offline pill driven by the same gatewayOnline
+  /// check the rest of the panel uses.
+  Widget _header(BuildContext context, AppStore store) {
+    final online = store.gatewayOnline;
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+          child: const Icon(Icons.send_rounded, color: Colors.white, size: 21),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.newMessage,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 17.5, fontWeight: FontWeight.w800),
+              ),
+              Text(
+                AppInfo.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Pill(
+          label: online ? context.l10n.statusConnected : context.l10n.statusOffline,
+          color: online ? AppColors.successDark : AppColors.warningDark,
+          background: online ? AppColors.successSoft : AppColors.warningSoft,
+          dot: true,
+          pulse: online,
+        ),
+      ],
+    );
+  }
+
+  /// Amber "phone not connected" banner with a direct way to the
+  /// Gateway screen — sending stays blocked until the phone is back.
+  Widget _gatewayWarning(BuildContext context) => Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: AppColors.warningSoft,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: AppColors.warning.withValues(alpha: .45)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.warning_amber_rounded, size: 21, color: AppColors.warningDark),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.phoneNotConnected,
+                    style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800, color: AppColors.warningDark),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    context.l10n.gatewayWarnMsg,
+                    style: const TextStyle(fontSize: 13, height: 1.35, color: AppColors.warningDark),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        AppButton(
+          label: context.l10n.openGateway,
+          icon: Icons.phonelink_ring_rounded,
+          variant: AppButtonVariant.outline,
+          size: AppButtonSize.sm,
+          onPressed: () => context.go('/gateway'),
+        ),
+      ],
     ),
   ).animate().fadeIn().shakeX(hz: 3, amount: 4);
 
@@ -302,6 +465,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                               count: store.groupCount(g.id),
                               color: g.color,
                               selected: groupId == g.id,
+                              checkWhenSelected: true,
                               onTap: () => setState(() => _groupId = g.id),
                             ).animate(delay: (40 * i).ms).fadeIn().slideX(begin: .2, end: 0),
                         ],
@@ -317,7 +481,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                     onPressed: () => context.go('/numbers'),
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     icon: const Icon(Icons.contacts_rounded, size: 18),
-                    label: Text(context.l10n.openDatabase, style: TextStyle(fontWeight: FontWeight.w700)),
+                    label: Text(context.l10n.chooseFromDatabase, style: TextStyle(fontWeight: FontWeight.w700)),
                   ),
                 ),
               ),
@@ -393,27 +557,75 @@ class _ComposeScreenState extends State<ComposeScreen> {
     );
   }
 
-  /// Sending-SIM choice on the Compose screen itself — the panel's
-  /// main screen, where the owner actually sends from. One tap:
-  /// Phone default / SIM 1 / SIM 2, saved immediately (no separate
-  /// Save step, no trip to Settings or the Gateway screen).
+  /// Sending-SIM choice on the Compose screen itself, as one clean
+  /// dropdown-style field ("SIM 1 · Telenor"). Picking an option
+  /// saves at once through the shared sending setting — the gateway
+  /// re-reads it before every SMS, so a campaign started after
+  /// choosing SIM 2 goes out from SIM 2, never the other SIM.
   Widget _simRow(BuildContext context, AppStore store) {
     final selected = store.settings.simSlot;
     return Row(
       children: [
-        const Icon(Icons.sim_card_rounded, size: 20, color: AppColors.textMuted),
-        const SizedBox(width: 8),
-        Text(context.l10n.sendingSim, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+        Text(context.l10n.sendFrom, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
         const SizedBox(width: 10),
         Expanded(
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilterChipX(label: context.l10n.simPhoneDefault, selected: selected == -1, onTap: () => _chooseSim(-1)),
-              for (var slot = 0; slot < 2; slot++)
-                FilterChipX(label: _simLabel(slot), selected: selected == slot, onTap: () => _chooseSim(slot)),
+          child: PopupMenuButton<int>(
+            tooltip: context.l10n.sendingSim,
+            initialValue: selected,
+            onSelected: _chooseSim,
+            position: PopupMenuPosition.under,
+            itemBuilder: (_) => [
+              for (final slot in const [-1, 0, 1])
+                PopupMenuItem<int>(
+                  value: slot,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 26,
+                        child: slot == selected
+                            ? const Icon(Icons.check_rounded, size: 18, color: AppColors.primary)
+                            : null,
+                      ),
+                      Flexible(
+                        child: Text(
+                          slot < 0 ? context.l10n.simPhoneDefault : _simLabel(slot),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: slot == selected ? FontWeight.w700 : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.borderStrong),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.sim_card_rounded, size: 19, color: AppColors.textMuted),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      _currentSimLabel(store),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  const Icon(Icons.expand_more_rounded, size: 21, color: AppColors.textMuted),
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -467,34 +679,54 @@ class _ComposeScreenState extends State<ComposeScreen> {
             child: Text(context.l10n.today, style: TextStyle(fontSize: 11.5, color: AppColors.textMuted)),
           ),
           const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 220),
-              alignment: Alignment.topRight,
-              child: Container(
-                constraints: BoxConstraints(maxWidth: mobile ? 300 : 520),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: empty ? Colors.white : AppColors.primary,
-                  border: empty ? Border.all(color: AppColors.border) : null,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(18),
-                    topRight: Radius.circular(4),
-                    bottomLeft: Radius.circular(18),
-                    bottomRight: Radius.circular(18),
+          if (empty)
+            // Empty preview: a quiet placeholder where the bubble
+            // will appear once the user starts typing.
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 26),
+              child: Column(
+                children: [
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(color: AppColors.primaryTint, borderRadius: BorderRadius.circular(16)),
+                    child: const Icon(Icons.chat_bubble_outline_rounded, size: 26, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    context.l10n.msgPreviewEmpty,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 13.5, color: AppColors.textMuted),
+                  ),
+                ],
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                alignment: Alignment.topRight,
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: mobile ? 300 : 520),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(18),
+                      topRight: Radius.circular(4),
+                      bottomLeft: Radius.circular(18),
+                      bottomRight: Radius.circular(18),
+                    ),
+                  ),
+                  child: Text(
+                    text,
+                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                    style: const TextStyle(fontSize: 15, height: 1.45, color: Colors.white),
                   ),
                 ),
-                child: empty
-                    ? const _TypingDots()
-                    : Text(
-                        text,
-                        textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                        style: const TextStyle(fontSize: 15, height: 1.45, color: Colors.white),
-                      ),
               ),
             ),
-          ),
           if (!empty)
             Padding(
               padding: const EdgeInsets.only(top: 6, right: 4),
@@ -522,7 +754,13 @@ class _ComposeScreenState extends State<ComposeScreen> {
                     : total == 0
                     ? Fmt.number(remaining)
                     : '${Fmt.number(remaining)} → ${Fmt.number(afterRemaining!)}',
-                color: afterRemaining != null && afterRemaining < 0 ? AppColors.danger : null,
+                // An exhausted limit reads as a warning, not a fact:
+                // "0 left today" in orange/red like the design.
+                color: (remaining != null && remaining <= 0)
+                    ? AppColors.danger
+                    : afterRemaining != null && afterRemaining < 0
+                    ? AppColors.danger
+                    : null,
               ),
               // The manually entered package balance is only shown
               // when one was actually entered in Settings — at 0
@@ -543,6 +781,23 @@ class _ComposeScreenState extends State<ComposeScreen> {
               ],
             ],
           ),
+          // One-line state notes under the stats, matching the
+          // reference states: limit used up, or phone disconnected.
+          if (remaining != null && remaining <= 0) ...[
+            const SizedBox(height: 12),
+            Text(
+              context.l10n.dailyLimitUsedUp,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.warningDark),
+            ),
+          ] else if (!store.gatewayOnline) ...[
+            const SizedBox(height: 12),
+            Text(
+              context.l10n.blockGateway,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.warningDark),
+            ),
+          ],
         ],
       ),
     );
@@ -663,8 +918,8 @@ class _ComposeScreenState extends State<ComposeScreen> {
                           onChanged: (_) => setState(() {}),
                           style: const TextStyle(fontSize: 16, height: 1.4),
                           decoration: InputDecoration(
-                            hintText: context.l10n.messageHint,
-                            hintMaxLines: 2,
+                            hintText: context.l10n.composeInputHint,
+                            hintMaxLines: 1,
                             filled: true,
                             fillColor: AppColors.surfaceAlt,
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -688,7 +943,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                         button: true,
                         label: context.l10n.navSend,
                         child: Material(
-                          color: canSend ? AppColors.success : AppColors.disabledBg,
+                          color: canSend ? AppColors.primary : AppColors.disabledBg,
                           shape: const CircleBorder(),
                           child: InkWell(
                             customBorder: const CircleBorder(),
@@ -724,33 +979,5 @@ class _ComposeScreenState extends State<ComposeScreen> {
         ),
       ),
     ).animate().slideY(begin: 1, end: 0, delay: 150.ms, duration: 520.ms, curve: Motion.emphasized);
-  }
-}
-
-class _TypingDots extends StatelessWidget {
-  const _TypingDots();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 44,
-      height: 18,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          for (var i = 0; i < 3; i++)
-            Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(color: AppColors.textSubtle, shape: BoxShape.circle),
-                )
-                .animate(onPlay: (c) => c.repeat(), delay: (150 * i).ms)
-                .moveY(begin: 0, end: -5, duration: 300.ms, curve: Curves.easeOut)
-                .then()
-                .moveY(begin: -5, end: 0, duration: 300.ms, curve: Curves.easeIn)
-                .then(delay: 300.ms),
-        ],
-      ),
-    );
   }
 }
