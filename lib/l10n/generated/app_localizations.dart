@@ -504,7 +504,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Panel kis zaban mein dikhe'**
+  /// **'Panel kis zaban mein dikhe, woh chunein'**
   String get languageSub;
 
   /// No description provided for @languageChanged.
@@ -876,7 +876,7 @@ abstract class AppLocalizations {
   /// No description provided for @simChoiceCaption.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'SIM ka intekhab Android gateway phone par nazar ayega'**
+  /// **'Chunein ke messages kis SIM se jayenge. Ye Android gateway phone par apply hota hai.'**
   String get simChoiceCaption;
 
   /// No description provided for @loadSims.
@@ -896,7 +896,6 @@ abstract class AppLocalizations {
   /// In ur_Latn, this message translates to:
   /// **'Rok diya gaya (Stop)'**
   String get failStopped;
-
 
   /// No description provided for @failLimitReached.
   ///
@@ -2590,6 +2589,78 @@ abstract class AppLocalizations {
   /// **'Selected'**
   String get modeSelected;
 
+  /// No description provided for @newMessage.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Naya message'**
+  String get newMessage;
+
+  /// No description provided for @statusConnected.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Connected'**
+  String get statusConnected;
+
+  /// No description provided for @statusOffline.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Offline'**
+  String get statusOffline;
+
+  /// No description provided for @phoneNotConnected.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Bhejne wala phone connected nahi'**
+  String get phoneNotConnected;
+
+  /// No description provided for @sendFrom.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Is se bhejein'**
+  String get sendFrom;
+
+  /// No description provided for @totalSmsShort.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Kul SMS'**
+  String get totalSmsShort;
+
+  /// No description provided for @msgPreviewEmpty.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Aapka message yahan nazar aayega'**
+  String get msgPreviewEmpty;
+
+  /// No description provided for @composeInputHint.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Apna message likhein…'**
+  String get composeInputHint;
+
+  /// No description provided for @dailyLimitUsedUp.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Aaj ki SMS limit khatam ho gayi hai. Kal dobara bhej sakte hain.'**
+  String get dailyLimitUsedUp;
+
+  /// No description provided for @sendThisMessage.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Ye message bhej dein?'**
+  String get sendThisMessage;
+
+  /// No description provided for @sendNow.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Abhi bhejein'**
+  String get sendNow;
+
+  /// No description provided for @chooseFromDatabase.
+  ///
+  /// In ur_Latn, this message translates to:
+  /// **'Database se chunein'**
+  String get chooseFromDatabase;
+
   /// No description provided for @countNumbers.
   ///
   /// In ur_Latn, this message translates to:
@@ -3313,13 +3384,13 @@ abstract class AppLocalizations {
   /// No description provided for @secPackage.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Package / Limit'**
+  /// **'SMS Package aur Roz ki Limit'**
   String get secPackage;
 
   /// No description provided for @secPackageSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Roz ki limit aur baqi SMS'**
+  /// **'SIM package mein baqi SMS aur roz ki sending limit'**
   String get secPackageSub;
 
   /// No description provided for @secSending.
@@ -3331,13 +3402,13 @@ abstract class AppLocalizations {
   /// No description provided for @secSendingSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Waqfa aur test mode'**
+  /// **'Message ka waqfa, test mode aur bhejne wali SIM'**
   String get secSendingSub;
 
   /// No description provided for @secAccountSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Password tabdeel karein'**
+  /// **'Aap ki profile aur password'**
   String get secAccountSub;
 
   /// No description provided for @secDemo.
@@ -3349,19 +3420,19 @@ abstract class AppLocalizations {
   /// No description provided for @secDemoSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Backend lagne tak sample data'**
+  /// **'Panel try karne ke liye sample data load ya clear karein'**
   String get secDemoSub;
 
   /// No description provided for @settingsSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Panel ki bunyadi settings ek jagah'**
+  /// **'Zaban, SMS package, sending aur account ki settings'**
   String get settingsSub;
 
   /// No description provided for @settingsSubDesktop.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Panel ki bunyadi settings ek jagah — har section ka apna Save'**
+  /// **'Zaban, SMS package, sending aur account ki settings — har section alag save hota hai'**
   String get settingsSubDesktop;
 
   /// No description provided for @limitsSavedMsg.
@@ -3373,31 +3444,31 @@ abstract class AppLocalizations {
   /// No description provided for @limitsSavedTitle.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Package / Limit save'**
+  /// **'Package aur limit save ho gayi'**
   String get limitsSavedTitle;
 
   /// No description provided for @dailyLimit.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Roz ki SMS limit'**
+  /// **'Roz ki SMS Limit'**
   String get dailyLimit;
 
   /// No description provided for @dailyLimitHint.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Is se zyada aik din mein nahi jayenge'**
+  /// **'App aik din mein is se zyada SMS nahi bhejegi. Is se aap ka SIM package aur balance mehfooz rehta hai.'**
   String get dailyLimitHint;
 
   /// No description provided for @packageRemaining.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Package mein baqi SMS'**
+  /// **'Package mein Baqi SMS'**
   String get packageRemaining;
 
   /// No description provided for @packageHelper.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Package recharge ke baad yahan update karein (manual)'**
+  /// **'Aap ke SIM package mein kitne SMS baqi hain. Jab bhi package recharge ya renew karein, yahan update kar dein.'**
   String get packageHelper;
 
   /// No description provided for @sendingSavedTitle.
@@ -3409,7 +3480,7 @@ abstract class AppLocalizations {
   /// No description provided for @defaultDelay.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Har SMS ke baad default waqfa'**
+  /// **'Messages ke darmiyan waqfa'**
   String get defaultDelay;
 
   /// No description provided for @best.
@@ -3433,13 +3504,13 @@ abstract class AppLocalizations {
   /// No description provided for @testModeOnSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Asal SMS nahi jayenge — sirf simulation'**
+  /// **'On — messages sirf simulate honge, asal SMS nahi jayega'**
   String get testModeOnSub;
 
   /// No description provided for @testModeOffSub.
   ///
   /// In ur_Latn, this message translates to:
-  /// **'Asal SMS gateway se jayenge'**
+  /// **'Off — asal SMS gateway phone ki SIM se jayenge'**
   String get testModeOffSub;
 
   /// No description provided for @oldPasswordRequired.
