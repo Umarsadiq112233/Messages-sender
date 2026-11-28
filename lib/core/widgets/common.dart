@@ -342,6 +342,7 @@ class FilterChipX extends StatelessWidget {
     required this.onTap,
     this.color = AppColors.primary,
     this.count,
+    this.checkWhenSelected = false,
   });
 
   final String label;
@@ -349,6 +350,10 @@ class FilterChipX extends StatelessWidget {
   final VoidCallback onTap;
   final Color color;
   final int? count;
+
+  /// When true, a check icon leads the label while selected
+  /// (used by the Compose group chips).
+  final bool checkWhenSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -370,12 +375,21 @@ class FilterChipX extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : AppColors.text,
+              if (checkWhenSelected && selected) ...[
+                const Icon(Icons.check_rounded, size: 17, color: Colors.white),
+                const SizedBox(width: 6),
+              ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 200),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : AppColors.text,
+                  ),
                 ),
               ),
               if (count != null) ...[
