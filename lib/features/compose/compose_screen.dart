@@ -19,6 +19,7 @@ import '../../core/widgets/brand.dart';
 import '../../core/widgets/common.dart';
 import '../../data/app_store.dart';
 import '../../data/models.dart';
+import '../../data/remote/sms_channel.dart';
 import '../shared/shared_widgets.dart';
 import '../../l10n/l10n.dart';
 
@@ -50,6 +51,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
   String? _groupId;
   bool _sending = false;
 
+  /// SIMs present in this device (Android gateway phone only; empty
+  /// elsewhere — the SIM 1 / SIM 2 choices below still work, the
+  /// choice is a shared setting the gateway phone re-reads per SMS).
+  List<SimInfo> _sims = const [];
+
   List<(String, String)> _templates(AppLocalizations l) => [
     (l.tplSaleTitle, l.tplSale),
     (l.tplPaymentTitle, l.tplPayment),
@@ -61,6 +67,28 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     _applyMode(widget.initialMode);
+    if (SmsChannel.isSupported) _loadSims();
+  }
+
+  Future<void> _loadSims() async {
+    final sims = await const SmsChannel().listSims();
+    if (!mounted) return;
+    setState(() => _sims = sims);
+  }
+
+  String _simLabel(int slot) {
+    final sim = _sims.where((x) => x.slot == slot).firstOrNull;
+    final n = slot + 1;
+    if (sim == null || sim.carrier.isEmpty) return context.l10n.simSlot(n);
+    return context.l10n.simSlotCarrier(n, sim.carrier);
+  }
+
+  /// Saves at once, like the Gateway screen's selector: the gateway
+  /// re-reads the choice before every message, so a campaign started
+  /// after choosing SIM 2 goes out from SIM 2 — never the other SIM.
+  void _chooseSim(int slot) {
+    final store = context.readStore;
+    store.saveSending(delaySeconds: store.settings.delaySeconds, testMode: store.settings.testMode, simSlot: slot);
   }
 
   @override
@@ -356,8 +384,39 @@ class _ComposeScreenState extends State<ComposeScreen> {
                 ),
             ],
           ),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 10),
+          _simRow(context, store),
         ],
       ),
+    );
+  }
+
+  /// Sending-SIM choice on the Compose screen itself — the panel's
+  /// main screen, where the owner actually sends from. One tap:
+  /// Phone default / SIM 1 / SIM 2, saved immediately (no separate
+  /// Save step, no trip to Settings or the Gateway screen).
+  Widget _simRow(BuildContext context, AppStore store) {
+    final selected = store.settings.simSlot;
+    return Row(
+      children: [
+        const Icon(Icons.sim_card_rounded, size: 20, color: AppColors.textMuted),
+        const SizedBox(width: 8),
+        Text(context.l10n.sendingSim, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilterChipX(label: context.l10n.simPhoneDefault, selected: selected == -1, onTap: () => _chooseSim(-1)),
+              for (var slot = 0; slot < 2; slot++)
+                FilterChipX(label: _simLabel(slot), selected: selected == slot, onTap: () => _chooseSim(slot)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
