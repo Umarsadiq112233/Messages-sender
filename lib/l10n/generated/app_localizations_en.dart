@@ -433,7 +433,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'SMS permission not allowed — allow SMS for this app in Android settings';
 
   @override
-  String get failNoSim => 'Chosen SIM not found — check the Sending SIM in Settings';
+  String get failNoSim =>
+      'Chosen SIM not found — check the Sending SIM in Settings';
 
   @override
   String get sendingSim => 'Sending SIM';
@@ -452,7 +453,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get simChoiceCaption => 'Choose which SIM sends your messages. This applies on the Android gateway phone.';
+  String get simChoiceCaption =>
+      'Choose which SIM sends your messages. This applies on the Android gateway phone.';
 
   @override
   String get loadSims => 'Load SIMs';
@@ -727,7 +729,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sentToday => 'Sent today';
-
 
   @override
   String get leftToday => 'Left today';
@@ -1458,6 +1459,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modeSelected => 'Selected';
 
   @override
+  String get newMessage => 'New message';
+
+  @override
+  String get statusConnected => 'Connected';
+
+  @override
+  String get statusOffline => 'Offline';
+
+  @override
+  String get phoneNotConnected => 'Sending phone is not connected';
+
+  @override
+  String get sendFrom => 'Send from';
+
+  @override
+  String get totalSmsShort => 'Total SMS';
+
+  @override
+  String get msgPreviewEmpty => 'Your message will appear here';
+
+  @override
+  String get composeInputHint => 'Type your message…';
+
+  @override
+  String get dailyLimitUsedUp =>
+      'Today\'s SMS limit is used up. You can send again tomorrow.';
+
+  @override
+  String get sendThisMessage => 'Send this message?';
+
+  @override
+  String get sendNow => 'Send now';
+
+  @override
+  String get chooseFromDatabase => 'Choose from Database';
+
+  @override
   String countNumbers(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1901,7 +1939,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get secPackage => 'SMS Package & Daily Limit';
 
   @override
-  String get secPackageSub => 'SMS remaining in your SIM package and the daily sending limit';
+  String get secPackageSub =>
+      'SMS remaining in your SIM package and the daily sending limit';
 
   @override
   String get secSending => 'Sending';
@@ -1919,7 +1958,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get secDemoSub => 'Load or clear sample data for trying the panel';
 
   @override
-  String get settingsSub => 'Language, SMS package, sending and account settings';
+  String get settingsSub =>
+      'Language, SMS package, sending and account settings';
 
   @override
   String get settingsSubDesktop =>
@@ -1937,7 +1977,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyLimit => 'Daily SMS Limit';
 
   @override
-  String get dailyLimitHint => 'The app will not send more SMS than this in one day. This protects your SIM package and balance.';
+  String get dailyLimitHint =>
+      'The app will not send more SMS than this in one day. This protects your SIM package and balance.';
 
   @override
   String get packageRemaining => 'SMS Remaining in Package';
@@ -1964,10 +2005,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get testModeOnSub => 'On — messages are only simulated; no real SMS is sent';
+  String get testModeOnSub =>
+      'On — messages are only simulated; no real SMS is sent';
 
   @override
-  String get testModeOffSub => 'Off — real SMS are sent from the SIM on the gateway phone';
+  String get testModeOffSub =>
+      'Off — real SMS are sent from the SIM on the gateway phone';
 
   @override
   String get oldPasswordRequired => 'Enter your current password';
