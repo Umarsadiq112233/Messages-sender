@@ -413,14 +413,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get failLowBalance => 'سم بیلنس کم ہے';
 
   @override
-  String get failLowBalanceHint => 'بیلنس کم ہے — اپنی سم کا پیکیج/بیلنس چیک کریں';
+  String get failLowBalanceHint =>
+      'بیلنس کم ہے — اپنی سم کا پیکیج/بیلنس چیک کریں';
 
   @override
   String get failNoPermission =>
       'ایس ایم ایس کی اجازت نہیں — Android سیٹنگز میں اس ایپ کو ایس ایم ایس کی اجازت دیں';
 
   @override
-  String get failNoSim => 'منتخب سم نہیں ملی — Settings میں بھیجنے والی سم چیک کریں';
+  String get failNoSim =>
+      'منتخب سم نہیں ملی — Settings میں بھیجنے والی سم چیک کریں';
 
   @override
   String get sendingSim => 'بھیجنے والی سم';
@@ -439,7 +441,8 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get simChoiceCaption => 'منتخب کریں کہ پیغامات کس سم سے جائیں گے۔ یہ Android گیٹ وے فون پر لاگو ہوتا ہے۔';
+  String get simChoiceCaption =>
+      'منتخب کریں کہ پیغامات کس سم سے جائیں گے۔ یہ Android گیٹ وے فون پر لاگو ہوتا ہے۔';
 
   @override
   String get loadSims => 'سمیں لوڈ کریں';
@@ -713,7 +716,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get sentToday => 'آج بھیجے';
-
 
   @override
   String get leftToday => 'آج باقی';
@@ -1433,6 +1435,43 @@ class AppLocalizationsUr extends AppLocalizations {
   String get modeSelected => 'منتخب';
 
   @override
+  String get newMessage => 'نیا پیغام';
+
+  @override
+  String get statusConnected => 'منسلک';
+
+  @override
+  String get statusOffline => 'آف لائن';
+
+  @override
+  String get phoneNotConnected => 'بھیجنے والا فون کنیکٹ نہیں';
+
+  @override
+  String get sendFrom => 'اس سے بھیجیں';
+
+  @override
+  String get totalSmsShort => 'کل ایس ایم ایس';
+
+  @override
+  String get msgPreviewEmpty => 'آپ کا پیغام یہاں نظر آئے گا';
+
+  @override
+  String get composeInputHint => 'اپنا پیغام لکھیں…';
+
+  @override
+  String get dailyLimitUsedUp =>
+      'آج کی ایس ایم ایس حد ختم ہو گئی ہے۔ کل دوبارہ بھیج سکتے ہیں۔';
+
+  @override
+  String get sendThisMessage => 'یہ پیغام بھیج دیں؟';
+
+  @override
+  String get sendNow => 'ابھی بھیجیں';
+
+  @override
+  String get chooseFromDatabase => 'ڈیٹا بیس سے منتخب کریں';
+
+  @override
   String countNumbers(int count) {
     return '$count نمبر';
   }
@@ -1858,7 +1897,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get secPackage => 'ایس ایم ایس پیکج اور روزانہ حد';
 
   @override
-  String get secPackageSub => 'سم پیکج میں باقی ایس ایم ایس اور روزانہ بھیجنے کی حد';
+  String get secPackageSub =>
+      'سم پیکج میں باقی ایس ایم ایس اور روزانہ بھیجنے کی حد';
 
   @override
   String get secSending => 'سینڈنگ';
@@ -1876,7 +1916,8 @@ class AppLocalizationsUr extends AppLocalizations {
   String get secDemoSub => 'پینل آزمانے کے لیے نمونہ ڈیٹا لوڈ یا صاف کریں';
 
   @override
-  String get settingsSub => 'زبان، ایس ایم ایس پیکج، سینڈنگ اور اکاؤنٹ کی سیٹنگز';
+  String get settingsSub =>
+      'زبان، ایس ایم ایس پیکج، سینڈنگ اور اکاؤنٹ کی سیٹنگز';
 
   @override
   String get settingsSubDesktop =>
@@ -1894,13 +1935,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String get dailyLimit => 'روزانہ ایس ایم ایس حد';
 
   @override
-  String get dailyLimitHint => 'ایپ ایک دن میں اس سے زیادہ ایس ایم ایس نہیں بھیجے گی۔ اس سے آپ کا سم پیکج اور بیلنس محفوظ رہتا ہے۔';
+  String get dailyLimitHint =>
+      'ایپ ایک دن میں اس سے زیادہ ایس ایم ایس نہیں بھیجے گی۔ اس سے آپ کا سم پیکج اور بیلنس محفوظ رہتا ہے۔';
 
   @override
   String get packageRemaining => 'پیکج میں باقی ایس ایم ایس';
 
   @override
-  String get packageHelper => 'آپ کے سم پیکج میں کتنے ایس ایم ایس باقی ہیں۔ جب بھی پیکج ری چارج یا تجدید کریں، یہاں اپ ڈیٹ کر دیں۔';
+  String get packageHelper =>
+      'آپ کے سم پیکج میں کتنے ایس ایم ایس باقی ہیں۔ جب بھی پیکج ری چارج یا تجدید کریں، یہاں اپ ڈیٹ کر دیں۔';
 
   @override
   String get sendingSavedTitle => 'سینڈنگ سیٹنگز محفوظ';
@@ -1920,10 +1963,12 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get testModeOnSub => 'آن — پیغامات صرف نقل ہوں گے، اصل ایس ایم ایس نہیں جائے گا';
+  String get testModeOnSub =>
+      'آن — پیغامات صرف نقل ہوں گے، اصل ایس ایم ایس نہیں جائے گا';
 
   @override
-  String get testModeOffSub => 'آف — اصل ایس ایم ایس گیٹ وے فون کی سم سے جائیں گے';
+  String get testModeOffSub =>
+      'آف — اصل ایس ایم ایس گیٹ وے فون کی سم سے جائیں گے';
 
   @override
   String get oldPasswordRequired => 'پرانا پاس ورڈ لکھیں';
@@ -2594,7 +2639,8 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
       'SMS permission allowed nahi — Android settings mein is app ko SMS ki ijazat dein';
 
   @override
-  String get failNoSim => 'Muntakhab SIM nahi mili — Settings mein Sending SIM check karein';
+  String get failNoSim =>
+      'Muntakhab SIM nahi mili — Settings mein Sending SIM check karein';
 
   @override
   String get sendingSim => 'Bhejne wali SIM';
@@ -2613,7 +2659,8 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   }
 
   @override
-  String get simChoiceCaption => 'Chunein ke messages kis SIM se jayenge. Ye Android gateway phone par apply hota hai.';
+  String get simChoiceCaption =>
+      'Chunein ke messages kis SIM se jayenge. Ye Android gateway phone par apply hota hai.';
 
   @override
   String get loadSims => 'SIMs load karein';
@@ -2888,7 +2935,6 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
 
   @override
   String get sentToday => 'Aaj bheje';
-
 
   @override
   String get leftToday => 'Aaj baqi';
@@ -3610,6 +3656,43 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get modeSelected => 'Selected';
 
   @override
+  String get newMessage => 'Naya message';
+
+  @override
+  String get statusConnected => 'Connected';
+
+  @override
+  String get statusOffline => 'Offline';
+
+  @override
+  String get phoneNotConnected => 'Bhejne wala phone connected nahi';
+
+  @override
+  String get sendFrom => 'Is se bhejein';
+
+  @override
+  String get totalSmsShort => 'Kul SMS';
+
+  @override
+  String get msgPreviewEmpty => 'Aapka message yahan nazar aayega';
+
+  @override
+  String get composeInputHint => 'Apna message likhein…';
+
+  @override
+  String get dailyLimitUsedUp =>
+      'Aaj ki SMS limit khatam ho gayi hai. Kal dobara bhej sakte hain.';
+
+  @override
+  String get sendThisMessage => 'Ye message bhej dein?';
+
+  @override
+  String get sendNow => 'Abhi bhejein';
+
+  @override
+  String get chooseFromDatabase => 'Database se chunein';
+
+  @override
   String countNumbers(int count) {
     return '$count numbers';
   }
@@ -4035,7 +4118,8 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get secPackage => 'SMS Package aur Roz ki Limit';
 
   @override
-  String get secPackageSub => 'SIM package mein baqi SMS aur roz ki sending limit';
+  String get secPackageSub =>
+      'SIM package mein baqi SMS aur roz ki sending limit';
 
   @override
   String get secSending => 'Sending';
@@ -4050,10 +4134,12 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get secDemo => 'Demo data';
 
   @override
-  String get secDemoSub => 'Panel try karne ke liye sample data load ya clear karein';
+  String get secDemoSub =>
+      'Panel try karne ke liye sample data load ya clear karein';
 
   @override
-  String get settingsSub => 'Zaban, SMS package, sending aur account ki settings';
+  String get settingsSub =>
+      'Zaban, SMS package, sending aur account ki settings';
 
   @override
   String get settingsSubDesktop =>
@@ -4071,7 +4157,8 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   String get dailyLimit => 'Roz ki SMS Limit';
 
   @override
-  String get dailyLimitHint => 'App aik din mein is se zyada SMS nahi bhejegi. Is se aap ka SIM package aur balance mehfooz rehta hai.';
+  String get dailyLimitHint =>
+      'App aik din mein is se zyada SMS nahi bhejegi. Is se aap ka SIM package aur balance mehfooz rehta hai.';
 
   @override
   String get packageRemaining => 'Package mein Baqi SMS';
@@ -4098,7 +4185,8 @@ class AppLocalizationsUrLatn extends AppLocalizationsUr {
   }
 
   @override
-  String get testModeOnSub => 'On — messages sirf simulate honge, asal SMS nahi jayega';
+  String get testModeOnSub =>
+      'On — messages sirf simulate honge, asal SMS nahi jayega';
 
   @override
   String get testModeOffSub => 'Off — asal SMS gateway phone ki SIM se jayenge';
